@@ -34,11 +34,11 @@ namespace mtm {
         SortedList filter(Predicate condition) const{};
         template<typename Operation>
         SortedList apply(Operation operation) const{};
-        ConstIterator begin()const{};
-        ConstIterator end()const{};
+      //  ConstIterator begin()const{};
+      //  ConstIterator end()const{};
 
         };
-
+/*
     template <class T>
     class SortedList<T>::ConstIterator {
     /**
@@ -58,5 +58,4 @@ namespace mtm {
      *
      */
     };
-}
 /* */
