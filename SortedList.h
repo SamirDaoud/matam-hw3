@@ -8,6 +8,7 @@ namespace mtm {
     template <typename T>
     class SortedList
     {
+
       struct Node {
             T data;
             Node *next;
