@@ -67,12 +67,13 @@ void TaskManager::completeTask(const string &personName) {
     persons[index].completeTask();
 }
 
-
 void TaskManager::bumpPriorityByType(TaskType type, int priority) {
 
     typedef mtm::SortedList<Task> TasksList;
 
     if (priority <= 0) return; // nothing to do if negative or 0.
+
+    string typeFilter = taskTypeToString(type);
 
     for (int i = 0; i < personsCount; i++) {
         TasksList tasksList = persons[i].getTasks(); // REFERENCE to getTasks, NOT A COPY
@@ -82,7 +83,7 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
         //code for iterator not done yet -> syntax error
         for (const Task &task: tasksList) { //iterate over tasks in list
 
-            if (taskTypeToString(task.getType()) == type) { //found the type
+            if (taskTypeToString(task.getType()) == typeFilter) { //found the type
                 Task updatedTask(task.getPriority() + priority, type, task.getDescription());
                 updatedTask.setId(task.getId());
                 updatedTasksList.insert(updatedTask);
@@ -92,7 +93,7 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
         } //tasksList loo[
 
         persons[i].setTasks(updatedTasksList);
-        delete &tasksList;
+        //delete &tasksList; no need wasn't allocated here
 
     } //persons loop
 }
