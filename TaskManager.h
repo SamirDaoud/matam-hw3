@@ -21,6 +21,8 @@ private:
     // Additional private fields
 
     Person persons [MAX_PERSONS]; // array of persons with tasks assigned
+    //Note: first person added gets index 0, second 1,..., last MAX_PERSONS-1.
+
     int personsCount; // number of Persons already in the array
     int countID; // internal ID counter that is incremented whenever a person is added
 
@@ -39,7 +41,7 @@ private:
      * @param name name of person to find
      * @return index of person if found. If not returns MAX_PERSONS
      */
-    int findPerson (const string& name);
+    int findPerson (const string& name) const;
 
     /**
      * Check if task has the desired type.

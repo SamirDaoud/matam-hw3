@@ -5,6 +5,7 @@
 #include "TaskManager.h"
 
 // Private Functions
+
 void TaskManager::addPerson(const string &name) {
 
     if (personsCount == MAX_PERSONS) {
@@ -23,7 +24,7 @@ void TaskManager::addPerson(const string &name) {
 
 }
 
-int TaskManager::findPerson (const string& name) {
+int TaskManager::findPerson (const string& name) const {
     for (int i = 0; i < MAX_PERSONS; i++) {
         if (persons[i].getName() == name) return i;
     }
@@ -55,6 +56,60 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
 
     persons[index].assignTask(task);
 }
+
+
+
+void TaskManager::completeTask(const string &personName) {
+
+    int index = findPerson(personName);
+    if (index == MAX_PERSONS) return; // not in company, nothing to do here.
+
+    persons[index].completeTask();
+}
+
+
+void TaskManager::bumpPriorityByType(TaskType type, int priority) {
+
+    typedef mtm::SortedList<Task> TasksList;
+
+    if (priority <= 0) return; // nothing to do if negative or 0.
+
+    for (int i = 0; i < personsCount; i++) {
+        TasksList tasksList = persons[i].getTasks(); // REFERENCE to getTasks, NOT A COPY
+        TasksList updatedTasksList; //new empty list made using default ctor
+
+        //traverse the list
+        //code for iterator not done yet -> syntax error
+        for (const Task &task: tasksList) { //iterate over tasks in list
+
+            if (taskTypeToString(task.getType()) == type) { //found the type
+                Task updatedTask(task.getPriority() + priority, type, task.getDescription());
+                updatedTask.setId(task.getId());
+                updatedTasksList.insert(updatedTask);
+            } else {
+                updatedTasksList.insert(task);
+            }
+        } //tasksList loo[
+
+        persons[i].setTasks(updatedTasksList);
+        delete &tasksList;
+
+    } //persons loop
+}
+
+
+
+
+// Print functions
+
+void TaskManager::printAllEmployees() const {
+
+    for (int i = 0; i < personsCount; i++) {
+        std::cout << persons[i];
+    }
+}
+
+
 
 
 
