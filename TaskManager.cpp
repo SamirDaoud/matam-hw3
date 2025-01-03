@@ -31,7 +31,7 @@ int TaskManager::findPerson (const string& name) const {
     return MAX_PERSONS;
 }
 
-bool TaskManager::isTaskType(const Task &task, string &type) {
+bool TaskManager::isTaskType(const Task &task, const string &type) {
 
     string ogType = taskTypeToString(task.getType());
     return (ogType == type) ;
@@ -57,6 +57,29 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
     persons[index].assignTask(task);
 }
 
+
+SortedList<Task> TaskManager::merge(const string& typeFilter) const {
+
+    typedef mtm::SortedList<Task> TaskList;
+
+    TaskList merged;
+
+    for (int i = 0; i < personsCount; i++) {
+        TaskList currTasks = persons[i].getTasks();
+
+        if (typeFilter != "no_filter") { //we want filter
+            //lambda expression
+            currTasks = currTasks.filter([typeFilter](const Task& task) { return isTaskType(task, typeFilter); });
+        }
+
+        for (const auto &taskLocal : currTasks) {
+            merged.insert(taskLocal);
+        }
+    }
+
+
+    return merged;
+}
 
 
 void TaskManager::completeTask(const string &personName) {
@@ -99,8 +122,6 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
 }
 
 
-
-
 // Print functions
 
 void TaskManager::printAllEmployees() const {
@@ -109,6 +130,38 @@ void TaskManager::printAllEmployees() const {
         std::cout << persons[i] << std::endl;
     }
 }
+
+void TaskManager::printTasksByType(TaskType type) const {
+
+    typedef mtm::SortedList<Task> TaskList;
+
+    string typeString = taskTypeToString(type);
+    TaskList mergedList = merge(typeString);
+
+    for (const Task& localTasks : mergedList) {
+        std::cout << localTasks << std::endl;
+    }
+}
+
+void TaskManager::printAllTasks() const {
+    typedef mtm::SortedList<Task> TaskList;
+
+    //string typeString = taskTypeToString(type);
+    TaskList mergedList = merge();
+
+    for (const Task& localTasks : mergedList) {
+        std::cout << localTasks << std::endl;
+    }
+
+}
+
+
+
+
+
+
+
+
 
 
 

@@ -49,8 +49,15 @@ private:
      * @param type Desired type, string form.
      * @return true if task is of type type
      */
-    static bool isTaskType (const Task& task, string& type);
+    static bool isTaskType (const Task& task, const string& type);
 
+    /**
+     * Merges all tasks lists of every person into a single list.
+     * List is sorted chronologically by person and by priority ranking.
+     * @param typeFilter (optional) filter to apply so that only elements with the specific type will be in the list.
+     * @return a sortedList if type Task with all the tasks.
+     */
+    SortedList<Task> merge (const string& typeFilter = "no_filter") const;
 
 
 public:
