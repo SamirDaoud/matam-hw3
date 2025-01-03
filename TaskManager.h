@@ -20,8 +20,9 @@ private:
 
     // Additional private fields
 
-    Person persons [MAX_PERSONS]; //array of persons with tasks assigned
-    int countID; //internal ID counter that is incremented whenever a person is added
+    Person persons [MAX_PERSONS]; // array of persons with tasks assigned
+    int personsCount; // number of Persons already in the array
+    int countID; // internal ID counter that is incremented whenever a person is added
 
 
     // Additional private functions
@@ -29,9 +30,24 @@ private:
     /**
      * @brief adds a person to the people in the taskManager.
      * @param name - name of Person to be added.
-     * @throw runtime_error - if adding person failed.
+     * @throw runtime_error - if adding person failed (no space left).
      */
-    void addPerson (string& name);
+    void addPerson (const string& name);
+
+    /**
+     * Finds index of person in the array persons
+     * @param name name of person to find
+     * @return index of person if found. If not returns MAX_PERSONS
+     */
+    int findPerson (const string& name);
+
+    /**
+     * Check if task has the desired type.
+     * @param task Task to check its type.
+     * @param type Desired type, string form.
+     * @return true if task is of type type
+     */
+    static bool isTaskType (const Task& task, string& type);
 
 
 
