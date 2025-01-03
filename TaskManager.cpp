@@ -51,7 +51,7 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
     if (index == MAX_PERSONS) {
         //person not found, we need to add
         addPerson(personName);
-        index = personsCount; //set ID to latest person
+        index = personsCount-1; //set ID to latest person
     }
 
     persons[index].assignTask(task);
@@ -81,7 +81,7 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
 
         //traverse the list
         //code for iterator not done yet -> syntax error
-        for (const Task &task: tasksList) { //iterate over tasks in list
+        for (const Task &task : tasksList) { //iterate over tasks in list
 
             if (taskTypeToString(task.getType()) == typeFilter) { //found the type
                 Task updatedTask(task.getPriority() + priority, type, task.getDescription());
@@ -105,8 +105,8 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
 
 void TaskManager::printAllEmployees() const {
 
-    for (int i = 0; i < personsCount; i++) {
-        std::cout << persons[i];
+    for (int i = 0; i < personsCount && i < MAX_PERSONS; i++) {
+        std::cout << persons[i] << std::endl;
     }
 }
 
