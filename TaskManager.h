@@ -2,9 +2,14 @@
 #pragma once
 
 #include "Task.h"
+#include "Person.h"
 
 /**
  * @brief Class managing tasks assigned to multiple persons.
+ *
+ * TaskManager includes and array of people (Person).
+ * Each person has a number of tasks (SortedList of Tasks within the Person class).
+ * TaskManager's job is to assign and manage tasks to the Persons within the array.
  */
 class TaskManager {
 private:
@@ -13,7 +18,22 @@ private:
      */
     static const int MAX_PERSONS = 10;
 
-    // Note - Additional private fields and methods can be added if needed.
+    // Additional private fields
+
+    Person persons [MAX_PERSONS]; //array of persons with tasks assigned
+    int countID; //internal ID counter that is incremented whenever a person is added
+
+
+    // Additional private functions
+
+    /**
+     * @brief adds a person to the people in the taskManager.
+     * @param name - name of Person to be added.
+     * @throw runtime_error - if adding person failed.
+     */
+    void addPerson (string& name);
+
+
 
 public:
     /**
