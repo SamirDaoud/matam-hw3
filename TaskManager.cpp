@@ -39,7 +39,7 @@ bool TaskManager::isTaskType(const Task &task, const string &type) {
 
 // Constructors
 
-TaskManager::TaskManager() : personsCount(0), countID(0) {} // default constructor
+TaskManager::TaskManager() : personsCount(0) {} // default constructor
 
 
 // Public Functions
