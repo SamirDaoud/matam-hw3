@@ -10,7 +10,7 @@ namespace mtm {
         T data;
         Node<T>* next;
         Node() : next(nullptr) {}
-        explicit Node(const T data, Node<T> *ptr = nullptr) : data(data), next(ptr) {}
+        explicit Node(const T data, Node<T> *next_ptr = nullptr) : data(data), next(next_ptr) {}
 
         //copy constructor - recursive
         Node (const Node& other) : data(other.data), next(nullptr) {
@@ -79,23 +79,28 @@ namespace mtm {
             }
              */
 
-            //copy constructor called
 
-            Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr;
+            try {
+                Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr; //copy constructor called
 
-            head = headNode;
-            Node<T>* temp = head;
+                head = headNode;
+                Node<T>* temp = head;
 
-            while (temp->next) { //reach the one bfr nullptr
-                temp = temp->next;
+                while (temp->next) { //reach the one bfr nullptr
+                    temp = temp->next;
+                }
+                tail = temp;
+
+                temp = nullptr;
+                delete temp;
+            } catch (const std::bad_alloc& e) {
+                deleteNodes();
+                throw;
             }
-            tail = temp;
 
-            temp = nullptr;
-            delete temp;
         }
 
-        //default
+        //default constructor
         SortedList() {
             head = nullptr;
             size = 0;
@@ -105,6 +110,22 @@ namespace mtm {
         ~SortedList() {
             deleteNodes();
         }
+
+        //insert
+        void insert (const T& value) {
+            Node<T> newNode  = new Node<T> (value);
+            Node<T>* traversal = head;
+
+            while (traversal->next != nullptr && traversal->next->data > value) {
+                //for Task object this uses the > operator that is overloaded
+                traversal = traversal->next;
+            }
+
+            newNode.next = traversal->next;
+            traversal->next = newNode;
+        }
+
+
 
     };
 
@@ -126,5 +147,37 @@ namespace mtm {
          * 7. operator!= - returns true if the iterator points to a different element
          *
          */
+
+        class ConstIterator {
+            const Node<T>* current;
+        public:
+            friend SortedList<T>;
+            ConstIterator() = default;
+            explicit ConstIterator(Node<T>* current): current(current){}
+            // Overload for the comparison operator !=
+            bool operator!=(const ConstIterator& itr) const {
+                return current != itr.current;
+            }
+
+            // Overload for the dereference operator *
+            const T& operator*() const {
+                return current->data;
+            }
+
+            // Overload for the postincrement operator ++
+            ConstIterator& operator++() {
+                if (!current) {
+                    throw  std::out_of_range("iterating out of bounds");
+                }
+                current = current->next;
+                return *this;
+            }
+        };
+        ConstIterator begin() const{
+            return SortedList::ConstIterator(head);
+        }
+        ConstIterator end() const{
+            return ConstIterator(nullptr);
+        }
     };
 }
