@@ -1,30 +1,34 @@
+
+
 #pragma once
 
 #include <iostream>
 #include <stdexcept>
 
 namespace mtm {
-    template <typename T>
+    template<typename T>
     struct Node {
     public:
         T data;
-        Node<T>* next;
+        Node<T> *next;
+
         Node() : next(nullptr) {}
+
         explicit Node(const T data, Node<T> *next_ptr = nullptr) : data(data), next(next_ptr) {}
 
         //copy constructor - recursive
-        Node (const Node& other) : data(other.data), next(nullptr) {
+        Node(const Node &other) : data(other.data), next(nullptr) {
             if (other.next) { //if other.next is null stop
                 next = new Node(*other.next); // Recursively copy the next node
             }
         }
 
-        Node& operator= (Node const &other) {
+        Node &operator=(Node const &other) {
 
             if (this == &other) return *this;
 
             data = other.data;
-            Node* temp = next;
+            Node *temp = next;
             delete temp;
             next = other.next;
             if (next) {
@@ -37,25 +41,24 @@ namespace mtm {
 
     // SORTED LIST
     //Head is the largest
-    template <typename T>
+    template<typename T>
     class SortedList {
         //head of the list and its tail.
-        Node<T>* head;
-        Node<T>* tail;
+        Node<T> *head;
+        Node<T> *tail;
         int size;
-        void deleteNodes()
-        {
-            Node<T>* temp = head;
-            Node<T>* temp2 = temp;
-            while (temp)
-            {
+
+        void deleteNodes() {
+            Node<T> *temp = head;
+            Node<T> *temp2 = temp;
+            while (temp) {
                 temp2 = temp;
                 temp = temp->next;
                 delete temp2;
             }
             delete temp;
             head = nullptr;
-            this->size=0;
+            this->size = 0;
         }
 
     public:
@@ -68,32 +71,30 @@ namespace mtm {
 
         //copy constructor
         SortedList(SortedList<T> const &otherList) {
-            /*
-            SortedList<T> copy = new SortedList<T> ();
-            if (!otherList.head) return copy;
-            Node<T> *traversalO = otherList;
-            Node<T> *traversalC = copy;
+
+            SortedList<T> copy;
+            if (!otherList.head) return;
+            Node<T> *traversalO = otherList.head;
+            Node<T> *traversalC = copy.head;
 
             while (traversalO) {
                 traversalC = new Node(*traversalO);
             }
-             */
+
 
 
             try {
-                Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr; //copy constructor called
+                Node<T>* headNode = otherList.head ? new Node<T>(*(otherList.head)) : nullptr; //copy constructor called
 
                 head = headNode;
-                Node<T>* temp = head;
+                Node<T> *temp = head;
 
                 while (temp->next) { //reach the one bfr nullptr
                     temp = temp->next;
                 }
                 tail = temp;
 
-                temp = nullptr;
-                delete temp;
-            } catch (const std::bad_alloc& e) {
+            } catch (const std::bad_alloc &e) {
                 deleteNodes();
                 throw;
             }
@@ -112,8 +113,8 @@ namespace mtm {
         }
 
         //insert
-        void insert (const T& value) {
-            Node<T> newNode  = new Node<T> (value);
+        void insert(const T &value) {
+            Node<T>* newNode = new Node<T>(value);
             Node<T>* traversal = head;
 
             while (traversal->next != nullptr && traversal->next->data > value) {
@@ -121,17 +122,14 @@ namespace mtm {
                 traversal = traversal->next;
             }
 
-            newNode.next = traversal->next;
+            newNode->next = traversal->next;
             traversal->next = newNode;
         }
 
 
 
-    };
 
-    template <class T>
-    class SortedList<T>::ConstIterator {
-        /**
+        /** ConstIterator
          * the class should support the following public interface:
          * if needed, use =defualt / =delete
          *
@@ -148,36 +146,128 @@ namespace mtm {
          *
          */
 
+// ConstIterator definition
         class ConstIterator {
-            const Node<T>* current;
         public:
-            friend SortedList<T>;
-            ConstIterator() = default;
-            explicit ConstIterator(Node<T>* current): current(current){}
-            // Overload for the comparison operator !=
-            bool operator!=(const ConstIterator& itr) const {
-                return current != itr.current;
-            }
+            const Node<T> *current; // Pointer to the current node
 
-            // Overload for the dereference operator *
-            const T& operator*() const {
+            ConstIterator() : current(nullptr) {}
+
+            explicit ConstIterator(const Node<T> *node) : current(node) {}
+
+            // Dereference operator
+            const T &operator*() const {
                 return current->data;
             }
 
-            // Overload for the postincrement operator ++
-            ConstIterator& operator++() {
-                if (!current) {
-                    throw  std::out_of_range("iterating out of bounds");
+            // Pre-increment operator
+            ConstIterator &operator++() {
+                if (!current) { //if current i
+                    throw std::out_of_range("Iterator out of bounds");
                 }
                 current = current->next;
                 return *this;
             }
+
+            // Inequality operator
+            bool operator!=(const ConstIterator &other) const {
+                return current != other.current;
+            }
         };
-        ConstIterator begin() const{
-            return SortedList::ConstIterator(head);
+
+// begin() and end() methods
+        ConstIterator begin() const {
+            return ConstIterator(head);
         }
-        ConstIterator end() const{
+
+        ConstIterator end() const {
             return ConstIterator(nullptr);
         }
+
+/**
+ * removes the node the itr iterator points to.
+ * @param itr iterator to delete
+ */
+        void remove(const ConstIterator &itr) {
+            if (!itr.current) return; //nullptr
+            if (!head) return; //empty list
+
+            if (itr.current == head) {
+                Node<T>* temp = head;
+                head = head->next;
+                delete temp;
+                return;
+            }
+
+            // traverse until we find the node preceding the desired one
+
+            Node<T>* prev = head;
+
+            while (prev->next && prev->next != itr.current) {
+                prev = prev->next;
+            }
+
+            // delete
+            Node<T>* temp = prev->next;
+            prev->next = temp->next;
+
+            delete temp;
+
+            if (prev->next == nullptr) {
+                tail = prev; // Update the tail if the last node is removed
+            }
+
+            size--;
+
+        }
+
+/**
+ * retruns size of list
+ * @return
+ */
+        int length () {
+            return size;
+        }
+
+
+// filter class, accepts an operation
+        template<class Condition>
+/**
+ * filters the list according to a certain given condition
+ * @tparam Condition condition generic class that has a condition
+ * @param condition condition to filter by
+ * @return
+ */
+        SortedList filter(Condition condition) const {
+            SortedList result;
+            Node<T>* current = head;
+            while(current){
+                if (condition(current->data)) {
+                    result.insert(current->data);
+                }
+                current = current->next;
+            }
+            return result;
+        }
+
+/**
+ * makes a new SortedList with operation applied on all the nodes in the list
+ * @tparam Operation operation generic class
+ * @param op operation to apply to nodes
+ * @return SortedList with the modified nodes according to the operation
+ */
+        template<class Operation>
+        SortedList apply(Operation op) const {
+            SortedList result;
+            Node<T>* current = head;
+            while(current) {
+                result.insert(op(current->data));
+                current = current->next;
+            }
+            return result;
+        }
+
+
+
     };
 }
