@@ -7,7 +7,7 @@ namespace mtm {
     template <typename T>
     struct Node {
     public:
-        const T data;
+        T data;
         Node<T>* next;
         Node() : next(nullptr) {}
         explicit Node(const T data, Node<T> *ptr = nullptr) : data(data), next(ptr) {}
@@ -19,10 +19,24 @@ namespace mtm {
             }
         }
 
-        Node& operator= (Node const &other) = delete;
+        Node& operator= (Node const &other) {
+
+            if (this == &other) return *this;
+
+            data = other.data;
+            Node* temp = next;
+            delete temp;
+            next = other.next;
+            if (next) {
+                next = Node(other.next); //copy constructor called
+            }
+        }
+
 
     };
 
+    // SORTED LIST
+    //Head is the largest
     template <typename T>
     class SortedList {
         //head of the list and its tail.
@@ -51,6 +65,35 @@ namespace mtm {
         }
 
         //c`tors & d`tors:
+
+        //copy constructor
+        SortedList(SortedList<T> const &otherList) {
+            /*
+            SortedList<T> copy = new SortedList<T> ();
+            if (!otherList.head) return copy;
+            Node<T> *traversalO = otherList;
+            Node<T> *traversalC = copy;
+
+            while (traversalO) {
+                traversalC = new Node(*traversalO);
+            }
+             */
+
+            //copy constructor called
+
+            Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr;
+
+            head = headNode;
+            Node<T>* temp = head;
+
+            while (temp->next) { //reach the one bfr nullptr
+                temp = temp->next;
+            }
+            tail = temp;
+
+            temp = nullptr;
+            delete temp;
+        }
 
         //default
         SortedList() {
