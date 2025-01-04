@@ -10,30 +10,58 @@ namespace mtm {
         const T data;
         Node<T>* next;
         Node() : next(nullptr) {}
-        explicit Node(const T data, Node<T> *ptr = nullptr) :
-                data(data), next(ptr) {}
-    };
-        template <typename T>
-        class SortedList {
-            //head of the list and its tail.
-            Node<T>* head;
-            Node<T>* tail;
-            int size;
-            void deleteNodes()
-            {
-                Node<T>* temp=head;
-                while (temp)
-                {
-                    Node<T>* temp2= temp;
-                    temp = temp->next;
-                    delete temp2;
-                }
+        explicit Node(const T data, Node<T> *ptr = nullptr) : data(data), next(ptr) {}
 
-                this->size=0;
-            };
+        //copy constructor - recursive
+        Node (const Node& other) : data(other.data), next(nullptr) {
+            if (other.next) { //if other.next is null stop
+                next = new Node(*other.next); // Recursively copy the next node
+            }
+        }
+
+        Node& operator= (Node const &other) = delete;
+
+    };
+
+    template <typename T>
+    class SortedList {
+        //head of the list and its tail.
+        Node<T>* head;
+        Node<T>* tail;
+        int size;
+        void deleteNodes()
+        {
+            Node<T>* temp = head;
+            Node<T>* temp2 = temp;
+            while (temp)
+            {
+                temp2 = temp;
+                temp = temp->next;
+                delete temp2;
+            }
+            delete temp;
+            head = nullptr;
+            this->size=0;
+        }
 
     public:
+        //returns length of list
+        int length() const {
+            return this->size;
+        }
 
+        //c`tors & d`tors:
+
+        //default
+        SortedList() {
+            head = nullptr;
+            size = 0;
+        }
+
+        //default
+        ~SortedList() {
+            deleteNodes();
+        }
 
     };
 
