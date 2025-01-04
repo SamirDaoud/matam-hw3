@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include <iostream>
@@ -74,12 +72,14 @@ namespace mtm {
 
             SortedList<T> copy;
             if (!otherList.head) return;
+            /*
             Node<T> *traversalO = otherList.head;
             Node<T> *traversalC = copy.head;
 
             while (traversalO) {
-                traversalC = new Node(*traversalO);
+                traversalC = new Node<T>(*traversalO);
             }
+             */
 
 
 
