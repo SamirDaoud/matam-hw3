@@ -4,58 +4,60 @@
 #include <stdexcept>
 
 namespace mtm {
-
     template <typename T>
-    class SortedList
-    {
-
-      struct Node {
-            T data;
-            Node *next;
-                Node(const T &data) : data(data), next(nullptr) {}
-            };
-            Node *head;
-            int list_size;
+    struct Node {
     public:
-        //defalut constructor
-        SortedList();
-        //paramitrizied constructor
-        SortedList(const SortedList &other);
-        // assignment operator
-        SortedList& operator=(const SortedList &other);
-        //adding new element
-        void insert(const Node &other);
-        //destructor
-        ~SortedList();
-        //remove element
-       // void remove(ConstIterator it);
-       int length() const;
-        template<typename Predicate>
-        SortedList filter(Predicate condition) const{};
-        template<typename Operation>
-        SortedList apply(Operation operation) const{};
-      //  ConstIterator begin()const{};
-      //  ConstIterator end()const{};
+        const T data;
+        Node<T>* next;
+        Node() : next(nullptr) {}
+        explicit Node(const T data, Node<T> *ptr = nullptr) :
+                data(data), next(ptr) {}
+    };
+    class SortedList {
+    public:
+        /**
+         *
+         * the class should support the following public interface:
+         * if needed, use =defualt / =delete
+         *
+         * constructors and destructor:
+         * 1. SortedList() - creates an empty list.
+         * 2. copy constructor
+         * 3. operator= - assignment operator
+         * 4. ~SortedList() - destructor
+         *
+         * iterator:
+         * 5. class ConstIterator;
+         * 6. begin method
+         * 7. end method
+         *
+         * functions:
+         * 8. insert - inserts a new element to the list
+         * 9. remove - removes an element from the list
+         * 10. length - returns the number of elements in the list
+         * 11. filter - returns a new list with elements that satisfy a given condition
+         * 12. apply - returns a new list with elements that were modified by an operation
+         */
 
-        };
-/*
+    };
+
     template <class T>
     class SortedList<T>::ConstIterator {
-    /**
-     * the class should support the following public interface:
-     * if needed, use =defualt / =delete
-     *
-     * constructors and destructor:
-     * 1. a ctor(or ctors) your implementation needs
-     * 2. copy constructor
-     * 3. operator= - assignment operator
-     * 4. ~ConstIterator() - destructor
-     *
-     * operators:
-     * 5. operator* - returns the element the iterator points to
-     * 6. operator++ - advances the iterator to the next element
-     * 7. operator!= - returns true if the iterator points to a different element
-     *
-     */
+        /**
+         * the class should support the following public interface:
+         * if needed, use =defualt / =delete
+         *
+         * constructors and destructor:
+         * 1. a ctor(or ctors) your implementation needs
+         * 2. copy constructor
+         * 3. operator= - assignment operator
+         * 4. ~ConstIterator() - destructor
+         *
+         * operators:
+         * 5. operator* - returns the element the iterator points to
+         * 6. operator++ - advances the iterator to the next element
+         * 7. operator!= - returns true if the iterator points to a different element
+         *
+         */
     };
-/* */
+}
