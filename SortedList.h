@@ -210,8 +210,8 @@ namespace mtm {
 
             } catch (...) {
                 deleteNodes();
-                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 19
-                //without throw all tests run except for 7 and 19
+                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 13
+                //without throw all tests run except for 7 and 13
             }
             return *this;
 
