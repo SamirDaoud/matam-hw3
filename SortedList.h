@@ -8,18 +8,29 @@ namespace mtm {
     struct Node {
     public:
         T data;
-        Node<T> *next;
+        Node *next;
 
         Node() : next(nullptr) {}
 
-        explicit Node(const T data, Node<T> *next_ptr = nullptr) : data(data), next(next_ptr) {}
+        //parametrized constructor
+        explicit Node(const T& data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
 
         //copy constructor - recursive
         Node(const Node &other) : data(other.data), next(nullptr) {
-            if (other.next) { //if other.next is null stop
-                next = new Node(*other.next); // Recursively copy the next node
+            /*
+            try {
+                if (other.next) { //if other.next is null stop
+                    next = new Node(*other.next); // Recursively copy the next node
+                }
+            } catch (std::bad_alloc) {
+                //delete next;
+                //delete this;
+                throw;
             }
+             */
+
         }
+
 
         /*
          * no need for assignment operator here
@@ -88,21 +99,24 @@ namespace mtm {
         //c`tors & d`tors:
 
         //copy constructor
-        SortedList(SortedList<T> const &otherList) {
+        SortedList(SortedList<T> const &otherList) : head(nullptr), size (0) {
 
-            SortedList<T> copy;
+            //SortedList<T> copy;
             if (!otherList.head) return;
 
             try {
-                Node<T>* headNode = otherList.head ? new Node<T>(*(otherList.head)) : nullptr; //copy constructor called
-
-                head = headNode;
-                Node<T> *temp = head;
-
-                while (temp->next) { //reach the one bfr nullptr
-                    temp = temp->next;
+                head = new Node<T>(*(otherList.head)); // Node copy constructor called
+                Node<T>* travT = head; //this traversak
+                Node<T>* travO = otherList.head;
+                size++;
+                while (travO->next) {
+                    travT->next = new Node<T> (*(travO->next));
+                    travO = travO->next;
+                    size++;
                 }
-                //tail = temp;
+                //head = headNode;
+                //Node<T> *temp = head;
+
 
             } catch (const std::bad_alloc &e) {
                 deleteNodes();
@@ -112,25 +126,24 @@ namespace mtm {
         }
 
         //default constructor
-        SortedList() {
-            head = nullptr;
-            size = 0;
-        }
+        SortedList() : head(nullptr), size(0) { }
 
         //default
         ~SortedList() {
             deleteNodes();
         }
 
-        //insert
+        /**
+         * insert a new node to list
+         * @param value
+         */
         void insert(const T &value) {
-
+            Node<T>* newNode = nullptr;
             try {
-                Node<T>* newNode = new Node<T>(value);
+                newNode = new Node<T>(value);
 
                 if (!head) {
                     head = newNode;
-                    //tail = newNode;
                     size++;
                     return;
                 }
@@ -145,8 +158,9 @@ namespace mtm {
                 newNode->next = traversal->next;
                 traversal->next = newNode;
                 size++;
+
             }  catch (const std::bad_alloc& e) {
-                    deleteNodes();
+                    delete newNode;
                     throw;
             }
 
@@ -155,6 +169,7 @@ namespace mtm {
 
         //assignment operator for SortedList
         SortedList<T>& operator= (const SortedList<T> &other) {
+
             if (this == &other) {
                 return *this;
             }
