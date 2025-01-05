@@ -15,7 +15,8 @@ namespace mtm {
         //parametrized constructor
         explicit Node(const T& data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
 
-        //copy constructor - recursive
+        //constructor that accepts data
+        //next is nullptr
         Node(const Node &other) : data(other.data), next(nullptr) {
             /*
             try {
@@ -209,10 +210,14 @@ namespace mtm {
 
             } catch (...) {
                 deleteNodes();
+                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 19
+                //without throw all tests run except for 7 and 19
             }
             return *this;
 
         }
+
+
         /** ConstIterator
          * the class should support the following public interface:
          * if needed, use =defualt / =delete
