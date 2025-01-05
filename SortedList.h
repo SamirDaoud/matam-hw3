@@ -98,20 +98,23 @@ namespace mtm {
 
         //c`tors & d`tors:
 
+        static const int ZERO=0;
         //copy constructor
-        SortedList(SortedList<T> const &otherList) : head(nullptr), size (0) {
+        SortedList(const SortedList<T>  &otherList) : head(nullptr), size (ZERO) {
 
             //SortedList<T> copy;
-            if (!otherList.head) return;
+            if (!otherList.head)
+                return;
 
             try {
                 head = new Node<T>(*(otherList.head)); // Node copy constructor called
                 Node<T>* travT = head; //this traversak
-                Node<T>* travO = otherList.head;
+                Node<T>* travO = otherList.head->next;
                 size++;
-                while (travO->next) {
-                    travT->next = new Node<T> (*(travO->next));
+                while (travO) {
+                    travT->next = new Node<T> (*(travO));
                     travO = travO->next;
+                    travT=travT->next;
                     size++;
                 }
                 //head = headNode;
@@ -138,18 +141,28 @@ namespace mtm {
          * @param value
          */
         void insert(const T &value) {
-            Node<T>* newNode = nullptr;
+            //Node<T>* newNode = nullptr;
             try {
-                newNode = new Node<T>(value);
 
                 if (!head) {
-                    head = newNode;
+                    head = new Node<T>(value);
                     size++;
                     return;
                 }
 
-                Node<T>* traversal = head;
+                Node<T>* newNode = new Node<T>(value);
 
+
+                if (value > head->data) {
+                    newNode->next = head;
+                    head = newNode;
+                    size++;
+                    return;
+                }
+                Node<T>* traversal = head;
+               /* if(value>traversal->data){
+
+                }*/
                 while (traversal->next != nullptr && traversal->next->data > value) {
                     //for Task object this uses the > operator that is overloaded
                     traversal = traversal->next;
@@ -160,8 +173,8 @@ namespace mtm {
                 size++;
 
             }  catch (const std::bad_alloc& e) {
-                    delete newNode;
-                    throw;
+                    //delete newNode;
+                    throw e;
             }
 
 
@@ -290,6 +303,14 @@ namespace mtm {
  * @return
  */
         int length () {
+            //return size;
+//            int length_local = 0;
+//            Node<T>* traversal = head;
+//            while (traversal) {
+//                traversal = traversal->next;
+//                length_local++;
+//            }
+//            return length_local;
             return size;
         }
 
