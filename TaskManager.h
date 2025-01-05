@@ -24,7 +24,7 @@ private:
     //Note: first person added gets index 0, second 1,..., last MAX_PERSONS-1.
 
     int personsCount; // number of Persons already in the array
-    //int countID; // internal ID counter that is incremented whenever a person is added
+    int tasksCount; // internal ID counter that is incremented whenever a task is added
 
 
     // Additional private functions

@@ -9,7 +9,7 @@
 void TaskManager::addPerson(const string &name) {
 
     if (personsCount == MAX_PERSONS) {
-        throw std::runtime_error("Persons limit reached. Max is ten people.");
+        throw std::runtime_error("Employees limit reached.");
     }
 
     //space left - add new person
@@ -39,7 +39,7 @@ bool TaskManager::isTaskType(const Task &task, const string &type) {
 
 // Constructors
 
-TaskManager::TaskManager() : personsCount(0) {} // default constructor
+TaskManager::TaskManager() : personsCount(0), tasksCount(0) {} // default constructor
 
 
 // Public Functions
@@ -48,13 +48,22 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
 
     int index = findPerson(personName);
 
+    //check if person is already in the system
     if (index == MAX_PERSONS) {
-        //person not found, we need to add
+        //person not found, check if full
+
+        if (personsCount == MAX_PERSONS) {
+            throw std::runtime_error("Employees limit reached.");
+        }
+        //there is still room for one more person
         addPerson(personName);
-        index = personsCount-1; //set ID to latest person
+        index = personsCount-1; //set index to latest person
     }
 
-    persons[index].assignTask(task);
+    Task copy = task;
+    copy.setId(tasksCount);
+    tasksCount++;
+    persons[index].assignTask(copy); //assign task called for Person class
 }
 
 

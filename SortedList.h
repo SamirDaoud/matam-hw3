@@ -191,7 +191,7 @@ namespace mtm {
             deleteNodes();
 
             //in case of empty list
-            if (!&other) {
+            if (!other.head) {
                 head = nullptr;
                 //tail = nullptr;
                 size = 0;
@@ -207,10 +207,10 @@ namespace mtm {
                     traversal = traversal->next;
                 }
 
-                return *this;
             } catch (...) {
                 deleteNodes();
             }
+            return *this;
 
         }
         /** ConstIterator
