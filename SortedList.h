@@ -27,7 +27,9 @@ namespace mtm {
 
             data = other.data;
             Node *temp = next;
-            delete temp;
+            if (next) {
+                delete temp;
+            }
             next = other.next;
             if (next) {
                 next = Node(other.next); //copy constructor called
@@ -43,10 +45,25 @@ namespace mtm {
     class SortedList {
         //head of the list and its tail.
         Node<T> *head;
-        Node<T> *tail;
+        //Node<T> *tail;
         int size;
 
+        /**
+         * gets a pointer to the last node (before nullptr)
+         * the last node is the smallest in terms of the value we are sorting by
+         * @return node pointer to the last node in the list
+         */
+        Node<T>* tail () {
+            Node<T> current = head;
+            while (current.next) {
+                current = current.next;
+            }
+
+            return current;
+        }
+
         void deleteNodes() {
+            if (!head) return; // Avoid double deletion
             Node<T> *temp = head;
             Node<T> *temp2 = temp;
             while (temp) {
@@ -92,12 +109,32 @@ namespace mtm {
                 while (temp->next) { //reach the one bfr nullptr
                     temp = temp->next;
                 }
-                tail = temp;
+                //tail = temp;
 
             } catch (const std::bad_alloc &e) {
                 deleteNodes();
                 throw;
             }
+
+        }
+
+        //assignment operator for SortedList
+        SortedList<T>& operator= (SortedList<T> &other) {
+            if (this == &other) {
+                return *this;
+            }
+
+            //delete this list's nodes to make room for new ones
+            deleteNodes();
+
+            if (!other) {
+                head = nullptr;
+                //tail = nullptr;
+                size = 0;
+                return *this;
+            }
+
+
 
         }
 
@@ -115,6 +152,14 @@ namespace mtm {
         //insert
         void insert(const T &value) {
             Node<T>* newNode = new Node<T>(value);
+
+            if (!head) {
+                head = newNode;
+                //tail = newNode;
+                size++;
+                return;
+            }
+
             Node<T>* traversal = head;
 
             while (traversal->next != nullptr && traversal->next->data > value) {
@@ -124,10 +169,9 @@ namespace mtm {
 
             newNode->next = traversal->next;
             traversal->next = newNode;
+            size++;
+
         }
-
-
-
 
         /** ConstIterator
          * the class should support the following public interface:
@@ -146,7 +190,7 @@ namespace mtm {
          *
          */
 
-// ConstIterator definition
+        // ConstIterator definition
         class ConstIterator {
         public:
             const Node<T> *current; // Pointer to the current node
@@ -189,36 +233,29 @@ namespace mtm {
  * @param itr iterator to delete
  */
         void remove(const ConstIterator &itr) {
-            if (!itr.current) return; //nullptr
-            if (!head) return; //empty list
+            if (!itr.current || !head) return;
 
             if (itr.current == head) {
                 Node<T>* temp = head;
                 head = head->next;
                 delete temp;
+                size--;
                 return;
             }
 
-            // traverse until we find the node preceding the desired one
-
             Node<T>* prev = head;
-
             while (prev->next && prev->next != itr.current) {
                 prev = prev->next;
             }
 
-            // delete
+            if (!prev->next) return; // Node not found
+
             Node<T>* temp = prev->next;
             prev->next = temp->next;
 
             delete temp;
 
-            if (prev->next == nullptr) {
-                tail = prev; // Update the tail if the last node is removed
-            }
-
             size--;
-
         }
 
 /**
