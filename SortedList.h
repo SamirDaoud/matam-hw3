@@ -21,6 +21,8 @@ namespace mtm {
             }
         }
 
+        /*
+         * no need for assignment operator here
         Node &operator=(Node const &other) {
 
             if (this == &other) return *this;
@@ -35,6 +37,7 @@ namespace mtm {
                 next = Node(other.next); //copy constructor called
             }
         }
+         */
 
 
     };
@@ -53,7 +56,7 @@ namespace mtm {
          * the last node is the smallest in terms of the value we are sorting by
          * @return node pointer to the last node in the list
          */
-        Node<T>* tail () {
+        [[maybe_unused]] Node<T>* tail () {
             Node<T> current = head;
             while (current.next) {
                 current = current.next;
@@ -89,16 +92,6 @@ namespace mtm {
 
             SortedList<T> copy;
             if (!otherList.head) return;
-            /*
-            Node<T> *traversalO = otherList.head;
-            Node<T> *traversalC = copy.head;
-
-            while (traversalO) {
-                traversalC = new Node<T>(*traversalO);
-            }
-             */
-
-
 
             try {
                 Node<T>* headNode = otherList.head ? new Node<T>(*(otherList.head)) : nullptr; //copy constructor called
@@ -118,26 +111,6 @@ namespace mtm {
 
         }
 
-        //assignment operator for SortedList
-        SortedList<T>& operator= (SortedList<T> &other) {
-            if (this == &other) {
-                return *this;
-            }
-
-            //delete this list's nodes to make room for new ones
-            deleteNodes();
-
-            if (!other) {
-                head = nullptr;
-                //tail = nullptr;
-                size = 0;
-                return *this;
-            }
-
-
-
-        }
-
         //default constructor
         SortedList() {
             head = nullptr;
@@ -151,28 +124,67 @@ namespace mtm {
 
         //insert
         void insert(const T &value) {
-            Node<T>* newNode = new Node<T>(value);
 
-            if (!head) {
-                head = newNode;
-                //tail = newNode;
+            try {
+                Node<T>* newNode = new Node<T>(value);
+
+                if (!head) {
+                    head = newNode;
+                    //tail = newNode;
+                    size++;
+                    return;
+                }
+
+                Node<T>* traversal = head;
+
+                while (traversal->next != nullptr && traversal->next->data > value) {
+                    //for Task object this uses the > operator that is overloaded
+                    traversal = traversal->next;
+                }
+
+                newNode->next = traversal->next;
+                traversal->next = newNode;
                 size++;
-                return;
+            }  catch (const std::bad_alloc& e) {
+                    deleteNodes();
+                    throw;
             }
 
-            Node<T>* traversal = head;
-
-            while (traversal->next != nullptr && traversal->next->data > value) {
-                //for Task object this uses the > operator that is overloaded
-                traversal = traversal->next;
-            }
-
-            newNode->next = traversal->next;
-            traversal->next = newNode;
-            size++;
 
         }
 
+        //assignment operator for SortedList
+        SortedList<T>& operator= (const SortedList<T> &other) {
+            if (this == &other) {
+                return *this;
+            }
+
+            //delete this list's nodes to make room for new ones
+            deleteNodes();
+
+            //in case of empty list
+            if (!&other) {
+                head = nullptr;
+                //tail = nullptr;
+                size = 0;
+                return *this;
+            }
+
+            //not empty - fill this list with other list's stuff
+            try { //to get error thrown from insert
+                Node<T>* traversal = other.head;
+
+                while (traversal) {
+                    insert(traversal->data);
+                    traversal = traversal->next;
+                }
+
+                return *this;
+            } catch (...) {
+                deleteNodes();
+            }
+
+        }
         /** ConstIterator
          * the class should support the following public interface:
          * if needed, use =defualt / =delete
