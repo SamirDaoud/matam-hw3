@@ -143,10 +143,10 @@ namespace mtm {
          */
         void insert(const T &value) {
             //Node<T>* newNode = nullptr;
-            try {
+            //try {
 
                 if (!head) {
-                    head = new Node<T>(value);
+                        head = new Node<T>(value);
                     size++;
                     return;
                 }
@@ -173,48 +173,48 @@ namespace mtm {
                 traversal->next = newNode;
                 size++;
 
+                /*
             }  catch (const std::bad_alloc& e) {
                     //delete newNode;
                     throw e;
-            }
+            }*/
 
 
         }
 
-        //assignment operator for SortedList
-        SortedList<T>& operator= (const SortedList<T> &other) {
+        // assignment operator for SortedList
+        SortedList<T>& operator=(const SortedList<T>& other) {
 
             if (this == &other) {
                 return *this;
             }
 
-            //delete this list's nodes to make room for new ones
-            deleteNodes();
+            // use a temporary list so that it can be deleted safely in case of exception
+            SortedList<T> temp; //default constructor call
 
-            //in case of empty list
-            if (!other.head) {
-                head = nullptr;
-                //tail = nullptr;
-                size = 0;
-                return *this;
-            }
+            try {
 
-            //not empty - fill this list with other list's stuff
-            try { //to get error thrown from insert
                 Node<T>* traversal = other.head;
-
                 while (traversal) {
-                    insert(traversal->data);
+                    temp.insert(traversal->data);
                     traversal = traversal->next;
                 }
-
+                //if other is an empty list then temp will also be an empty list - it will not enter while
             } catch (...) {
-                deleteNodes();
-                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 13
-                //without throw all tests run except for 7 and 13
+                // Cleanup of `temp` happens automatically when it goes out of scope
+                throw; // Rethrow the exception
             }
-            return *this;
 
+            // manually swap this and other's fields
+            Node<T>* headTemp = head;
+            head = temp.head;
+            temp.head = headTemp;
+
+            int sizeTemp = size;
+            size = temp.size;
+            temp.size = sizeTemp;
+
+            return *this; //deletes temp and with it the original "this" object
         }
 
 
@@ -235,7 +235,6 @@ namespace mtm {
          *
          */
 
-        // ConstIterator definition
         class ConstIterator {
         public:
             const Node<T> *current; // Pointer to the current node
