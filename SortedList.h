@@ -5,52 +5,26 @@
 
 namespace mtm {
     template<typename T>
+    /**
+     * Generic simple linked list.
+     * @tparam T generic object - type of object to store in LinkedList.
+     */
     struct Node {
-    public:
-        T data;
-        Node *next;
+        //struct: public by default
+
+        T data; // data stored in the list
+        Node *next; // pointer to the next node
 
         Node() : next(nullptr) {}
 
         //parametrized constructor
-        explicit Node(const T& data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
+        explicit Node(const T &data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
 
         //constructor that accepts data
         //next is nullptr
-        Node(const Node &other) : data(other.data), next(nullptr) {
-            /*
-            try {
-                if (other.next) { //if other.next is null stop
-                    next = new Node(*other.next); // Recursively copy the next node
-                }
-            } catch (std::bad_alloc) {
-                //delete next;
-                //delete this;
-                throw;
-            }
-             */
+        Node(const Node &other) : data(other.data), next(nullptr) {}
 
-        }
-
-
-        /*
-         * no need for assignment operator here
-        Node &operator=(Node const &other) {
-
-            if (this == &other) return *this;
-
-            data = other.data;
-            Node *temp = next;
-            if (next) {
-                delete temp;
-            }
-            next = other.next;
-            if (next) {
-                next = Node(other.next); //copy constructor called
-            }
-        }
-         */
-
+        //assignment and destructor used are the default ones.
 
     };
 
@@ -68,7 +42,7 @@ namespace mtm {
          * the last node is the smallest in terms of the value we are sorting by
          * @return node pointer to the last node in the list
          */
-        [[maybe_unused]] Node<T>* tail () {
+        [[maybe_unused]] Node<T> *tail() {
             Node<T> current = head;
             while (current.next) {
                 current = current.next;
@@ -99,9 +73,11 @@ namespace mtm {
 
         //c`tors & d`tors:
 
-        static const int ZERO=0;
+        static const int ZERO = 0;
+
+
         //copy constructor
-        SortedList(const SortedList<T>  &otherList) : head(nullptr), size (ZERO) {
+        SortedList(const SortedList<T> &otherList) : head(nullptr), size(ZERO) {
 
             //SortedList<T> copy;
             if (!otherList.head)
@@ -109,13 +85,13 @@ namespace mtm {
 
             try {
                 head = new Node<T>(*(otherList.head)); // Node copy constructor called
-                Node<T>* travT = head; //this traversak
-                Node<T>* travO = otherList.head->next;
+                Node<T> *travT = head; //this traversak
+                Node<T> *travO = otherList.head->next;
                 size++;
                 while (travO) {
-                    travT->next = new Node<T> (*(travO));
+                    travT->next = new Node<T>(*(travO));
                     travO = travO->next;
-                    travT=travT->next;
+                    travT = travT->next;
                     size++;
                 }
                 //head = headNode;
@@ -130,7 +106,7 @@ namespace mtm {
         }
 
         //default constructor
-        SortedList() : head(nullptr), size(0) { }
+        SortedList() : head(nullptr), size(0) {}
 
         //default
         ~SortedList() {
@@ -145,45 +121,42 @@ namespace mtm {
             //Node<T>* newNode = nullptr;
             //try {
 
-                if (!head) {
-                        head = new Node<T>(value);
-                    size++;
-                    return;
-                }
-
-                Node<T>* newNode = new Node<T>(value);
-
-
-                if (value > head->data) {
-                    newNode->next = head;
-                    head = newNode;
-                    size++;
-                    return;
-                }
-                Node<T>* traversal = head;
-               /* if(value>traversal->data){
-
-                }*/
-                while (traversal->next != nullptr && traversal->next->data > value) {
-                    //for Task object this uses the > operator that is overloaded
-                    traversal = traversal->next;
-                }
-
-                newNode->next = traversal->next;
-                traversal->next = newNode;
+            if (!head) {
+                head = new Node<T>(value);
                 size++;
+                return;
+            }
 
-                /*
-            }  catch (const std::bad_alloc& e) {
-                    //delete newNode;
-                    throw e;
-            }*/
+            Node<T> *newNode = new Node<T>(value);
 
+
+            if (value > head->data) {
+                newNode->next = head;
+                head = newNode;
+                size++;
+                return;
+            }
+            Node<T> *traversal = head;
+            /* if(value>traversal->data){
+
+             }*/
+            while (traversal->next != nullptr && traversal->next->data > value) {
+                //for Task object this uses the > operator that is overloaded
+                traversal = traversal->next;
+            }
+
+            newNode->next = traversal->next;
+            traversal->next = newNode;
+            size++;
 
         }
 
-        // assignment operator for SortedList
-        SortedList<T>& operator=(const SortedList<T>& other) {
+        /**
+         * Assignment operator for SortedList.
+         * @param other SortedList to copy into the caller.
+         * @return pointer *this to caller.
+         */
+        SortedList<T> &operator=(const SortedList<T> &other) {
 
             if (this == &other) {
                 return *this;
@@ -194,7 +167,7 @@ namespace mtm {
 
             try {
 
-                Node<T>* traversal = other.head;
+                Node<T> *traversal = other.head;
                 while (traversal) {
                     temp.insert(traversal->data);
                     traversal = traversal->next;
@@ -206,7 +179,7 @@ namespace mtm {
             }
 
             // manually swap this and other's fields
-            Node<T>* headTemp = head;
+            Node<T> *headTemp = head;
             head = temp.head;
             temp.head = headTemp;
 
@@ -280,21 +253,21 @@ namespace mtm {
             if (!itr.current || !head) return;
 
             if (itr.current == head) {
-                Node<T>* temp = head;
+                Node<T> *temp = head;
                 head = head->next;
                 delete temp;
                 size--;
                 return;
             }
 
-            Node<T>* prev = head;
+            Node<T> *prev = head;
             while (prev->next && prev->next != itr.current) {
                 prev = prev->next;
             }
 
             if (!prev->next) return; // Node not found
 
-            Node<T>* temp = prev->next;
+            Node<T> *temp = prev->next;
             prev->next = temp->next;
 
             delete temp;
@@ -303,23 +276,17 @@ namespace mtm {
         }
 
 /**
- * retruns size of list
+ * return size of list
  * @return
  */
-        int length () {
-            //return size;
-//            int length_local = 0;
-//            Node<T>* traversal = head;
-//            while (traversal) {
-//                traversal = traversal->next;
-//                length_local++;
-//            }
-//            return length_local;
+        int length() {
             return size;
         }
 
 
-// filter class, accepts an operation
+/**
+ * filter class, accepts a condition to filter by. condition can be a function
+ */
         template<class Condition>
 /**
  * filters the list according to a certain given condition
@@ -328,18 +295,21 @@ namespace mtm {
  * @return
  */
         SortedList filter(Condition condition) const {
-            SortedList result;
-            Node<T>* current = head;
-            while(current){
-                if (condition(current->data)) {
-                    result.insert(current->data);
+            SortedList filteredList;
+            Node<T> *traversal = head;
+
+            while (traversal) {
+                if (condition(traversal->data)) {
+
+                    filteredList.insert(traversal->data);
                 }
-                current = current->next;
+                traversal = traversal->next;
             }
-            return result;
+            return filteredList;
         }
 
 /**
+ * Operation template accepts an operation object - function, boolean expression...
  * makes a new SortedList with operation applied on all the nodes in the list
  * @tparam Operation operation generic class
  * @param op operation to apply to nodes
@@ -347,15 +317,16 @@ namespace mtm {
  */
         template<class Operation>
         SortedList apply(Operation op) const {
-            SortedList result;
-            Node<T>* current = head;
-            while(current) {
-                result.insert(op(current->data));
-                current = current->next;
-            }
-            return result;
-        }
 
+            SortedList moddedCopy; //return this
+            Node<T> *traversal = head;
+
+            while (traversal) {
+                moddedCopy.insert(op(traversal->data));
+                traversal = traversal->next;
+            }
+            return moddedCopy;
+        }
 
 
     };
