@@ -1,0 +1,3847 @@
+commit 40c4435b614fd94b45f05ff650ec0090407d8a03
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Mon Jan 6 11:29:16 2025 +0200
+
+    Cleanup code.
+
+diff --git a/SortedList.h b/SortedList.h
+index 3d79b35..194ae09 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -5,52 +5,26 @@
+ 
+ namespace mtm {
+     template<typename T>
++    /**
++     * Generic simple linked list.
++     * @tparam T generic object - type of object to store in LinkedList.
++     */
+     struct Node {
+-    public:
+-        T data;
+-        Node *next;
++        //struct: public by default
++
++        T data; // data stored in the list
++        Node *next; // pointer to the next node
+ 
+         Node() : next(nullptr) {}
+ 
+         //parametrized constructor
+-        explicit Node(const T& data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
++        explicit Node(const T &data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
+ 
+         //constructor that accepts data
+         //next is nullptr
+-        Node(const Node &other) : data(other.data), next(nullptr) {
+-            /*
+-            try {
+-                if (other.next) { //if other.next is null stop
+-                    next = new Node(*other.next); // Recursively copy the next node
+-                }
+-            } catch (std::bad_alloc) {
+-                //delete next;
+-                //delete this;
+-                throw;
+-            }
+-             */
+-
+-        }
+-
+-
+-        /*
+-         * no need for assignment operator here
+-        Node &operator=(Node const &other) {
+-
+-            if (this == &other) return *this;
+-
+-            data = other.data;
+-            Node *temp = next;
+-            if (next) {
+-                delete temp;
+-            }
+-            next = other.next;
+-            if (next) {
+-                next = Node(other.next); //copy constructor called
+-            }
+-        }
+-         */
++        Node(const Node &other) : data(other.data), next(nullptr) {}
+ 
++        //assignment and destructor used are the default ones.
+ 
+     };
+ 
+@@ -68,7 +42,7 @@ namespace mtm {
+          * the last node is the smallest in terms of the value we are sorting by
+          * @return node pointer to the last node in the list
+          */
+-        [[maybe_unused]] Node<T>* tail () {
++        [[maybe_unused]] Node<T> *tail() {
+             Node<T> current = head;
+             while (current.next) {
+                 current = current.next;
+@@ -99,9 +73,11 @@ namespace mtm {
+ 
+         //c`tors & d`tors:
+ 
+-        static const int ZERO=0;
++        static const int ZERO = 0;
++
++
+         //copy constructor
+-        SortedList(const SortedList<T>  &otherList) : head(nullptr), size (ZERO) {
++        SortedList(const SortedList<T> &otherList) : head(nullptr), size(ZERO) {
+ 
+             //SortedList<T> copy;
+             if (!otherList.head)
+@@ -109,13 +85,13 @@ namespace mtm {
+ 
+             try {
+                 head = new Node<T>(*(otherList.head)); // Node copy constructor called
+-                Node<T>* travT = head; //this traversak
+-                Node<T>* travO = otherList.head->next;
++                Node<T> *travT = head; //this traversak
++                Node<T> *travO = otherList.head->next;
+                 size++;
+                 while (travO) {
+-                    travT->next = new Node<T> (*(travO));
++                    travT->next = new Node<T>(*(travO));
+                     travO = travO->next;
+-                    travT=travT->next;
++                    travT = travT->next;
+                     size++;
+                 }
+                 //head = headNode;
+@@ -130,7 +106,7 @@ namespace mtm {
+         }
+ 
+         //default constructor
+-        SortedList() : head(nullptr), size(0) { }
++        SortedList() : head(nullptr), size(0) {}
+ 
+         //default
+         ~SortedList() {
+@@ -145,45 +121,42 @@ namespace mtm {
+             //Node<T>* newNode = nullptr;
+             //try {
+ 
+-                if (!head) {
+-                        head = new Node<T>(value);
+-                    size++;
+-                    return;
+-                }
+-
+-                Node<T>* newNode = new Node<T>(value);
++            if (!head) {
++                head = new Node<T>(value);
++                size++;
++                return;
++            }
+ 
++            Node<T> *newNode = new Node<T>(value);
+ 
+-                if (value > head->data) {
+-                    newNode->next = head;
+-                    head = newNode;
+-                    size++;
+-                    return;
+-                }
+-                Node<T>* traversal = head;
+-               /* if(value>traversal->data){
+ 
+-                }*/
+-                while (traversal->next != nullptr && traversal->next->data > value) {
+-                    //for Task object this uses the > operator that is overloaded
+-                    traversal = traversal->next;
+-                }
+-
+-                newNode->next = traversal->next;
+-                traversal->next = newNode;
++            if (value > head->data) {
++                newNode->next = head;
++                head = newNode;
+                 size++;
++                return;
++            }
++            Node<T> *traversal = head;
++            /* if(value>traversal->data){
+ 
+-                /*
+-            }  catch (const std::bad_alloc& e) {
+-                    //delete newNode;
+-                    throw e;
+-            }*/
++             }*/
++            while (traversal->next != nullptr && traversal->next->data > value) {
++                //for Task object this uses the > operator that is overloaded
++                traversal = traversal->next;
++            }
+ 
++            newNode->next = traversal->next;
++            traversal->next = newNode;
++            size++;
+ 
+         }
+ 
+-        // assignment operator for SortedList
+-        SortedList<T>& operator=(const SortedList<T>& other) {
++        /**
++         * Assignment operator for SortedList.
++         * @param other SortedList to copy into the caller.
++         * @return pointer *this to caller.
++         */
++        SortedList<T> &operator=(const SortedList<T> &other) {
+ 
+             if (this == &other) {
+                 return *this;
+@@ -194,7 +167,7 @@ namespace mtm {
+ 
+             try {
+ 
+-                Node<T>* traversal = other.head;
++                Node<T> *traversal = other.head;
+                 while (traversal) {
+                     temp.insert(traversal->data);
+                     traversal = traversal->next;
+@@ -206,7 +179,7 @@ namespace mtm {
+             }
+ 
+             // manually swap this and other's fields
+-            Node<T>* headTemp = head;
++            Node<T> *headTemp = head;
+             head = temp.head;
+             temp.head = headTemp;
+ 
+@@ -280,21 +253,21 @@ namespace mtm {
+             if (!itr.current || !head) return;
+ 
+             if (itr.current == head) {
+-                Node<T>* temp = head;
++                Node<T> *temp = head;
+                 head = head->next;
+                 delete temp;
+                 size--;
+                 return;
+             }
+ 
+-            Node<T>* prev = head;
++            Node<T> *prev = head;
+             while (prev->next && prev->next != itr.current) {
+                 prev = prev->next;
+             }
+ 
+             if (!prev->next) return; // Node not found
+ 
+-            Node<T>* temp = prev->next;
++            Node<T> *temp = prev->next;
+             prev->next = temp->next;
+ 
+             delete temp;
+@@ -303,23 +276,17 @@ namespace mtm {
+         }
+ 
+ /**
+- * retruns size of list
++ * return size of list
+  * @return
+  */
+-        int length () {
+-            //return size;
+-//            int length_local = 0;
+-//            Node<T>* traversal = head;
+-//            while (traversal) {
+-//                traversal = traversal->next;
+-//                length_local++;
+-//            }
+-//            return length_local;
++        int length() {
+             return size;
+         }
+ 
+ 
+-// filter class, accepts an operation
++/**
++ * filter class, accepts a condition to filter by. condition can be a function
++ */
+         template<class Condition>
+ /**
+  * filters the list according to a certain given condition
+@@ -328,18 +295,21 @@ namespace mtm {
+  * @return
+  */
+         SortedList filter(Condition condition) const {
+-            SortedList result;
+-            Node<T>* current = head;
+-            while(current){
+-                if (condition(current->data)) {
+-                    result.insert(current->data);
++            SortedList filteredList;
++            Node<T> *traversal = head;
++
++            while (traversal) {
++                if (condition(traversal->data)) {
++
++                    filteredList.insert(traversal->data);
+                 }
+-                current = current->next;
++                traversal = traversal->next;
+             }
+-            return result;
++            return filteredList;
+         }
+ 
+ /**
++ * Operation template accepts an operation object - function, boolean expression...
+  * makes a new SortedList with operation applied on all the nodes in the list
+  * @tparam Operation operation generic class
+  * @param op operation to apply to nodes
+@@ -347,16 +317,17 @@ namespace mtm {
+  */
+         template<class Operation>
+         SortedList apply(Operation op) const {
+-            SortedList result;
+-            Node<T>* current = head;
+-            while(current) {
+-                result.insert(op(current->data));
+-                current = current->next;
++
++            SortedList moddedCopy; //return this
++            Node<T> *traversal = head;
++
++            while (traversal) {
++                moddedCopy.insert(op(traversal->data));
++                traversal = traversal->next;
+             }
+-            return result;
++            return moddedCopy;
+         }
+ 
+ 
+-
+     };
+ }
+\ No newline at end of file
+
+commit 6aabccae875655f4a9337424a468d53476fb43b3
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Mon Jan 6 11:20:38 2025 +0200
+
+    Fix bad_alloc exception return faliure in operator=.
+
+diff --git a/SortedList.h b/SortedList.h
+index 663432e..3d79b35 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -143,10 +143,10 @@ namespace mtm {
+          */
+         void insert(const T &value) {
+             //Node<T>* newNode = nullptr;
+-            try {
++            //try {
+ 
+                 if (!head) {
+-                    head = new Node<T>(value);
++                        head = new Node<T>(value);
+                     size++;
+                     return;
+                 }
+@@ -173,48 +173,48 @@ namespace mtm {
+                 traversal->next = newNode;
+                 size++;
+ 
++                /*
+             }  catch (const std::bad_alloc& e) {
+                     //delete newNode;
+                     throw e;
+-            }
++            }*/
+ 
+ 
+         }
+ 
+-        //assignment operator for SortedList
+-        SortedList<T>& operator= (const SortedList<T> &other) {
++        // assignment operator for SortedList
++        SortedList<T>& operator=(const SortedList<T>& other) {
+ 
+             if (this == &other) {
+                 return *this;
+             }
+ 
+-            //delete this list's nodes to make room for new ones
+-            deleteNodes();
++            // use a temporary list so that it can be deleted safely in case of exception
++            SortedList<T> temp; //default constructor call
+ 
+-            //in case of empty list
+-            if (!other.head) {
+-                head = nullptr;
+-                //tail = nullptr;
+-                size = 0;
+-                return *this;
+-            }
++            try {
+ 
+-            //not empty - fill this list with other list's stuff
+-            try { //to get error thrown from insert
+                 Node<T>* traversal = other.head;
+-
+                 while (traversal) {
+-                    insert(traversal->data);
++                    temp.insert(traversal->data);
+                     traversal = traversal->next;
+                 }
+-
++                //if other is an empty list then temp will also be an empty list - it will not enter while
+             } catch (...) {
+-                deleteNodes();
+-                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 13
+-                //without throw all tests run except for 7 and 13
++                // Cleanup of `temp` happens automatically when it goes out of scope
++                throw; // Rethrow the exception
+             }
+-            return *this;
+ 
++            // manually swap this and other's fields
++            Node<T>* headTemp = head;
++            head = temp.head;
++            temp.head = headTemp;
++
++            int sizeTemp = size;
++            size = temp.size;
++            temp.size = sizeTemp;
++
++            return *this; //deletes temp and with it the original "this" object
+         }
+ 
+ 
+@@ -235,7 +235,6 @@ namespace mtm {
+          *
+          */
+ 
+-        // ConstIterator definition
+         class ConstIterator {
+         public:
+             const Node<T> *current; // Pointer to the current node
+
+commit a8866943846f2f10ec9ffc36ce46f40c2503322f
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sun Jan 5 18:45:33 2025 +0200
+
+    Note 2 about test failiure in operator= SortedList.h
+
+diff --git a/SortedList.h b/SortedList.h
+index 0ded7a5..663432e 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -210,8 +210,8 @@ namespace mtm {
+ 
+             } catch (...) {
+                 deleteNodes();
+-                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 19
+-                //without throw all tests run except for 7 and 19
++                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 13
++                //without throw all tests run except for 7 and 13
+             }
+             return *this;
+ 
+
+commit f3c39638b0ddc4abf805cafc7ef59f2520be1ead
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sun Jan 5 18:42:05 2025 +0200
+
+    Note about test failiure in operator= SortedList.h
+
+diff --git a/SortedList.h b/SortedList.h
+index 231b930..0ded7a5 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -15,7 +15,8 @@ namespace mtm {
+         //parametrized constructor
+         explicit Node(const T& data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
+ 
+-        //copy constructor - recursive
++        //constructor that accepts data
++        //next is nullptr
+         Node(const Node &other) : data(other.data), next(nullptr) {
+             /*
+             try {
+@@ -209,10 +210,14 @@ namespace mtm {
+ 
+             } catch (...) {
+                 deleteNodes();
++                //throw; //adding throw fixes error 7 but leads to segmentation fault in test 19
++                //without throw all tests run except for 7 and 19
+             }
+             return *this;
+ 
+         }
++
++
+         /** ConstIterator
+          * the class should support the following public interface:
+          * if needed, use =defualt / =delete
+
+commit 2f5ad531bb27998db9d6ffb3bafa816223e5d2d7
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sun Jan 5 14:05:43 2025 +0200
+
+    All class tests passed.
+
+diff --git a/SortedList.h b/SortedList.h
+index 4db5ae6..231b930 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -191,7 +191,7 @@ namespace mtm {
+             deleteNodes();
+ 
+             //in case of empty list
+-            if (!&other) {
++            if (!other.head) {
+                 head = nullptr;
+                 //tail = nullptr;
+                 size = 0;
+@@ -207,10 +207,10 @@ namespace mtm {
+                     traversal = traversal->next;
+                 }
+ 
+-                return *this;
+             } catch (...) {
+                 deleteNodes();
+             }
++            return *this;
+ 
+         }
+         /** ConstIterator
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+index aff68fa..d7ff35a 100644
+--- a/TaskManager.cpp
++++ b/TaskManager.cpp
+@@ -9,7 +9,7 @@
+ void TaskManager::addPerson(const string &name) {
+ 
+     if (personsCount == MAX_PERSONS) {
+-        throw std::runtime_error("Persons limit reached. Max is ten people.");
++        throw std::runtime_error("Employees limit reached.");
+     }
+ 
+     //space left - add new person
+@@ -39,7 +39,7 @@ bool TaskManager::isTaskType(const Task &task, const string &type) {
+ 
+ // Constructors
+ 
+-TaskManager::TaskManager() : personsCount(0) {} // default constructor
++TaskManager::TaskManager() : personsCount(0), tasksCount(0) {} // default constructor
+ 
+ 
+ // Public Functions
+@@ -48,13 +48,22 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
+ 
+     int index = findPerson(personName);
+ 
++    //check if person is already in the system
+     if (index == MAX_PERSONS) {
+-        //person not found, we need to add
++        //person not found, check if full
++
++        if (personsCount == MAX_PERSONS) {
++            throw std::runtime_error("Employees limit reached.");
++        }
++        //there is still room for one more person
+         addPerson(personName);
+-        index = personsCount-1; //set ID to latest person
++        index = personsCount-1; //set index to latest person
+     }
+ 
+-    persons[index].assignTask(task);
++    Task copy = task;
++    copy.setId(tasksCount);
++    tasksCount++;
++    persons[index].assignTask(copy); //assign task called for Person class
+ }
+ 
+ 
+diff --git a/TaskManager.h b/TaskManager.h
+index b393ab1..92226de 100644
+--- a/TaskManager.h
++++ b/TaskManager.h
+@@ -24,7 +24,7 @@ private:
+     //Note: first person added gets index 0, second 1,..., last MAX_PERSONS-1.
+ 
+     int personsCount; // number of Persons already in the array
+-    //int countID; // internal ID counter that is incremented whenever a person is added
++    int tasksCount; // internal ID counter that is incremented whenever a task is added
+ 
+ 
+     // Additional private functions
+
+commit bf877862d95df2633df246ea38b3d053e4f56970
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sun Jan 5 13:45:29 2025 +0200
+
+    Fix problems with pointer in insert.
+
+diff --git a/SortedList.h b/SortedList.h
+index 6b16ec9..4db5ae6 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -98,20 +98,23 @@ namespace mtm {
+ 
+         //c`tors & d`tors:
+ 
++        static const int ZERO=0;
+         //copy constructor
+-        SortedList(SortedList<T> const &otherList) : head(nullptr), size (0) {
++        SortedList(const SortedList<T>  &otherList) : head(nullptr), size (ZERO) {
+ 
+             //SortedList<T> copy;
+-            if (!otherList.head) return;
++            if (!otherList.head)
++                return;
+ 
+             try {
+                 head = new Node<T>(*(otherList.head)); // Node copy constructor called
+                 Node<T>* travT = head; //this traversak
+-                Node<T>* travO = otherList.head;
++                Node<T>* travO = otherList.head->next;
+                 size++;
+-                while (travO->next) {
+-                    travT->next = new Node<T> (*(travO->next));
++                while (travO) {
++                    travT->next = new Node<T> (*(travO));
+                     travO = travO->next;
++                    travT=travT->next;
+                     size++;
+                 }
+                 //head = headNode;
+@@ -138,18 +141,28 @@ namespace mtm {
+          * @param value
+          */
+         void insert(const T &value) {
+-            Node<T>* newNode = nullptr;
++            //Node<T>* newNode = nullptr;
+             try {
+-                newNode = new Node<T>(value);
+ 
+                 if (!head) {
+-                    head = newNode;
++                    head = new Node<T>(value);
+                     size++;
+                     return;
+                 }
+ 
++                Node<T>* newNode = new Node<T>(value);
++
++
++                if (value > head->data) {
++                    newNode->next = head;
++                    head = newNode;
++                    size++;
++                    return;
++                }
+                 Node<T>* traversal = head;
++               /* if(value>traversal->data){
+ 
++                }*/
+                 while (traversal->next != nullptr && traversal->next->data > value) {
+                     //for Task object this uses the > operator that is overloaded
+                     traversal = traversal->next;
+@@ -160,8 +173,8 @@ namespace mtm {
+                 size++;
+ 
+             }  catch (const std::bad_alloc& e) {
+-                    delete newNode;
+-                    throw;
++                    //delete newNode;
++                    throw e;
+             }
+ 
+ 
+@@ -290,6 +303,14 @@ namespace mtm {
+  * @return
+  */
+         int length () {
++            //return size;
++//            int length_local = 0;
++//            Node<T>* traversal = head;
++//            while (traversal) {
++//                traversal = traversal->next;
++//                length_local++;
++//            }
++//            return length_local;
+             return size;
+         }
+ 
+
+commit b164e3b284ca31489c055d2a1f08d6c1cedbe4df
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sun Jan 5 11:44:21 2025 +0200
+
+    fix memory leaks. only test 1 doesn't pass.
+
+diff --git a/SortedList.h b/SortedList.h
+index 26a7586..6b16ec9 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -8,19 +8,30 @@ namespace mtm {
+     struct Node {
+     public:
+         T data;
+-        Node<T> *next;
++        Node *next;
+ 
+         Node() : next(nullptr) {}
+ 
+-        explicit Node(const T data, Node<T> *next_ptr = nullptr) : data(data), next(next_ptr) {}
++        //parametrized constructor
++        explicit Node(const T& data, Node *next_ptr = nullptr) : data(data), next(next_ptr) {}
+ 
+         //copy constructor - recursive
+         Node(const Node &other) : data(other.data), next(nullptr) {
+-            if (other.next) { //if other.next is null stop
+-                next = new Node(*other.next); // Recursively copy the next node
++            /*
++            try {
++                if (other.next) { //if other.next is null stop
++                    next = new Node(*other.next); // Recursively copy the next node
++                }
++            } catch (std::bad_alloc) {
++                //delete next;
++                //delete this;
++                throw;
+             }
++             */
++
+         }
+ 
++
+         /*
+          * no need for assignment operator here
+         Node &operator=(Node const &other) {
+@@ -88,21 +99,24 @@ namespace mtm {
+         //c`tors & d`tors:
+ 
+         //copy constructor
+-        SortedList(SortedList<T> const &otherList) {
++        SortedList(SortedList<T> const &otherList) : head(nullptr), size (0) {
+ 
+-            SortedList<T> copy;
++            //SortedList<T> copy;
+             if (!otherList.head) return;
+ 
+             try {
+-                Node<T>* headNode = otherList.head ? new Node<T>(*(otherList.head)) : nullptr; //copy constructor called
+-
+-                head = headNode;
+-                Node<T> *temp = head;
+-
+-                while (temp->next) { //reach the one bfr nullptr
+-                    temp = temp->next;
++                head = new Node<T>(*(otherList.head)); // Node copy constructor called
++                Node<T>* travT = head; //this traversak
++                Node<T>* travO = otherList.head;
++                size++;
++                while (travO->next) {
++                    travT->next = new Node<T> (*(travO->next));
++                    travO = travO->next;
++                    size++;
+                 }
+-                //tail = temp;
++                //head = headNode;
++                //Node<T> *temp = head;
++
+ 
+             } catch (const std::bad_alloc &e) {
+                 deleteNodes();
+@@ -112,25 +126,24 @@ namespace mtm {
+         }
+ 
+         //default constructor
+-        SortedList() {
+-            head = nullptr;
+-            size = 0;
+-        }
++        SortedList() : head(nullptr), size(0) { }
+ 
+         //default
+         ~SortedList() {
+             deleteNodes();
+         }
+ 
+-        //insert
++        /**
++         * insert a new node to list
++         * @param value
++         */
+         void insert(const T &value) {
+-
++            Node<T>* newNode = nullptr;
+             try {
+-                Node<T>* newNode = new Node<T>(value);
++                newNode = new Node<T>(value);
+ 
+                 if (!head) {
+                     head = newNode;
+-                    //tail = newNode;
+                     size++;
+                     return;
+                 }
+@@ -145,8 +158,9 @@ namespace mtm {
+                 newNode->next = traversal->next;
+                 traversal->next = newNode;
+                 size++;
++
+             }  catch (const std::bad_alloc& e) {
+-                    deleteNodes();
++                    delete newNode;
+                     throw;
+             }
+ 
+@@ -155,6 +169,7 @@ namespace mtm {
+ 
+         //assignment operator for SortedList
+         SortedList<T>& operator= (const SortedList<T> &other) {
++
+             if (this == &other) {
+                 return *this;
+             }
+
+commit b32d95cc6c6692bdfe5166277edeaa1a50b70389
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sun Jan 5 11:00:49 2025 +0200
+
+    Overload operator= for SortedList, remove = for Node.
+
+diff --git a/SortedList.h b/SortedList.h
+index 0828f96..26a7586 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -21,6 +21,8 @@ namespace mtm {
+             }
+         }
+ 
++        /*
++         * no need for assignment operator here
+         Node &operator=(Node const &other) {
+ 
+             if (this == &other) return *this;
+@@ -35,6 +37,7 @@ namespace mtm {
+                 next = Node(other.next); //copy constructor called
+             }
+         }
++         */
+ 
+ 
+     };
+@@ -53,7 +56,7 @@ namespace mtm {
+          * the last node is the smallest in terms of the value we are sorting by
+          * @return node pointer to the last node in the list
+          */
+-        Node<T>* tail () {
++        [[maybe_unused]] Node<T>* tail () {
+             Node<T> current = head;
+             while (current.next) {
+                 current = current.next;
+@@ -89,16 +92,6 @@ namespace mtm {
+ 
+             SortedList<T> copy;
+             if (!otherList.head) return;
+-            /*
+-            Node<T> *traversalO = otherList.head;
+-            Node<T> *traversalC = copy.head;
+-
+-            while (traversalO) {
+-                traversalC = new Node<T>(*traversalO);
+-            }
+-             */
+-
+-
+ 
+             try {
+                 Node<T>* headNode = otherList.head ? new Node<T>(*(otherList.head)) : nullptr; //copy constructor called
+@@ -116,26 +109,6 @@ namespace mtm {
+                 throw;
+             }
+ 
+-        }
+-
+-        //assignment operator for SortedList
+-        SortedList<T>& operator= (SortedList<T> &other) {
+-            if (this == &other) {
+-                return *this;
+-            }
+-
+-            //delete this list's nodes to make room for new ones
+-            deleteNodes();
+-
+-            if (!other) {
+-                head = nullptr;
+-                //tail = nullptr;
+-                size = 0;
+-                return *this;
+-            }
+-
+-
+-
+         }
+ 
+         //default constructor
+@@ -151,28 +124,67 @@ namespace mtm {
+ 
+         //insert
+         void insert(const T &value) {
+-            Node<T>* newNode = new Node<T>(value);
+ 
+-            if (!head) {
+-                head = newNode;
+-                //tail = newNode;
++            try {
++                Node<T>* newNode = new Node<T>(value);
++
++                if (!head) {
++                    head = newNode;
++                    //tail = newNode;
++                    size++;
++                    return;
++                }
++
++                Node<T>* traversal = head;
++
++                while (traversal->next != nullptr && traversal->next->data > value) {
++                    //for Task object this uses the > operator that is overloaded
++                    traversal = traversal->next;
++                }
++
++                newNode->next = traversal->next;
++                traversal->next = newNode;
+                 size++;
+-                return;
++            }  catch (const std::bad_alloc& e) {
++                    deleteNodes();
++                    throw;
+             }
+ 
+-            Node<T>* traversal = head;
+ 
+-            while (traversal->next != nullptr && traversal->next->data > value) {
+-                //for Task object this uses the > operator that is overloaded
+-                traversal = traversal->next;
++        }
++
++        //assignment operator for SortedList
++        SortedList<T>& operator= (const SortedList<T> &other) {
++            if (this == &other) {
++                return *this;
+             }
+ 
+-            newNode->next = traversal->next;
+-            traversal->next = newNode;
+-            size++;
++            //delete this list's nodes to make room for new ones
++            deleteNodes();
+ 
+-        }
++            //in case of empty list
++            if (!&other) {
++                head = nullptr;
++                //tail = nullptr;
++                size = 0;
++                return *this;
++            }
++
++            //not empty - fill this list with other list's stuff
++            try { //to get error thrown from insert
++                Node<T>* traversal = other.head;
+ 
++                while (traversal) {
++                    insert(traversal->data);
++                    traversal = traversal->next;
++                }
++
++                return *this;
++            } catch (...) {
++                deleteNodes();
++            }
++
++        }
+         /** ConstIterator
+          * the class should support the following public interface:
+          * if needed, use =defualt / =delete
+
+commit 6e771670a1a4e70885a771f2995be1292589aae1
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sun Jan 5 10:43:57 2025 +0200
+
+    Replace tail field with tail function.
+
+diff --git a/SortedList.h b/SortedList.h
+index 2caff77..0828f96 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -27,7 +27,9 @@ namespace mtm {
+ 
+             data = other.data;
+             Node *temp = next;
+-            delete temp;
++            if (next) {
++                delete temp;
++            }
+             next = other.next;
+             if (next) {
+                 next = Node(other.next); //copy constructor called
+@@ -43,10 +45,25 @@ namespace mtm {
+     class SortedList {
+         //head of the list and its tail.
+         Node<T> *head;
+-        Node<T> *tail;
++        //Node<T> *tail;
+         int size;
+ 
++        /**
++         * gets a pointer to the last node (before nullptr)
++         * the last node is the smallest in terms of the value we are sorting by
++         * @return node pointer to the last node in the list
++         */
++        Node<T>* tail () {
++            Node<T> current = head;
++            while (current.next) {
++                current = current.next;
++            }
++
++            return current;
++        }
++
+         void deleteNodes() {
++            if (!head) return; // Avoid double deletion
+             Node<T> *temp = head;
+             Node<T> *temp2 = temp;
+             while (temp) {
+@@ -92,13 +109,33 @@ namespace mtm {
+                 while (temp->next) { //reach the one bfr nullptr
+                     temp = temp->next;
+                 }
+-                tail = temp;
++                //tail = temp;
+ 
+             } catch (const std::bad_alloc &e) {
+                 deleteNodes();
+                 throw;
+             }
+ 
++        }
++
++        //assignment operator for SortedList
++        SortedList<T>& operator= (SortedList<T> &other) {
++            if (this == &other) {
++                return *this;
++            }
++
++            //delete this list's nodes to make room for new ones
++            deleteNodes();
++
++            if (!other) {
++                head = nullptr;
++                //tail = nullptr;
++                size = 0;
++                return *this;
++            }
++
++
++
+         }
+ 
+         //default constructor
+@@ -115,6 +152,14 @@ namespace mtm {
+         //insert
+         void insert(const T &value) {
+             Node<T>* newNode = new Node<T>(value);
++
++            if (!head) {
++                head = newNode;
++                //tail = newNode;
++                size++;
++                return;
++            }
++
+             Node<T>* traversal = head;
+ 
+             while (traversal->next != nullptr && traversal->next->data > value) {
+@@ -124,10 +169,9 @@ namespace mtm {
+ 
+             newNode->next = traversal->next;
+             traversal->next = newNode;
+-        }
+-
+-
++            size++;
+ 
++        }
+ 
+         /** ConstIterator
+          * the class should support the following public interface:
+@@ -146,7 +190,7 @@ namespace mtm {
+          *
+          */
+ 
+-// ConstIterator definition
++        // ConstIterator definition
+         class ConstIterator {
+         public:
+             const Node<T> *current; // Pointer to the current node
+@@ -189,36 +233,29 @@ namespace mtm {
+  * @param itr iterator to delete
+  */
+         void remove(const ConstIterator &itr) {
+-            if (!itr.current) return; //nullptr
+-            if (!head) return; //empty list
++            if (!itr.current || !head) return;
+ 
+             if (itr.current == head) {
+                 Node<T>* temp = head;
+                 head = head->next;
+                 delete temp;
++                size--;
+                 return;
+             }
+ 
+-            // traverse until we find the node preceding the desired one
+-
+             Node<T>* prev = head;
+-
+             while (prev->next && prev->next != itr.current) {
+                 prev = prev->next;
+             }
+ 
+-            // delete
++            if (!prev->next) return; // Node not found
++
+             Node<T>* temp = prev->next;
+             prev->next = temp->next;
+ 
+             delete temp;
+ 
+-            if (prev->next == nullptr) {
+-                tail = prev; // Update the tail if the last node is removed
+-            }
+-
+             size--;
+-
+         }
+ 
+ /**
+
+commit 4e656e4115b5d98fcf4cee364c3b0244e9ac7c39
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sat Jan 4 18:17:41 2025 +0200
+
+    Remove variable not used in TaskManager.cpp constructor.
+
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+index 71ec4af..aff68fa 100644
+--- a/TaskManager.cpp
++++ b/TaskManager.cpp
+@@ -39,7 +39,7 @@ bool TaskManager::isTaskType(const Task &task, const string &type) {
+ 
+ // Constructors
+ 
+-TaskManager::TaskManager() : personsCount(0), countID(0) {} // default constructor
++TaskManager::TaskManager() : personsCount(0) {} // default constructor
+ 
+ 
+ // Public Functions
+
+commit 0926edc48980dcfdc91a9a4312ac8dc29d4e3490
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sat Jan 4 18:16:21 2025 +0200
+
+    Remove variable not used in TaskManager.h
+
+diff --git a/TaskManager.h b/TaskManager.h
+index def728c..b393ab1 100644
+--- a/TaskManager.h
++++ b/TaskManager.h
+@@ -24,7 +24,7 @@ private:
+     //Note: first person added gets index 0, second 1,..., last MAX_PERSONS-1.
+ 
+     int personsCount; // number of Persons already in the array
+-    int countID; // internal ID counter that is incremented whenever a person is added
++    //int countID; // internal ID counter that is incremented whenever a person is added
+ 
+ 
+     // Additional private functions
+
+commit bd90b9d41f971a7d9d0627325c9de9018e804e93
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sat Jan 4 18:00:45 2025 +0200
+
+    Fix linker issue and unecesary code.
+
+diff --git a/SortedList.h b/SortedList.h
+index 3aff319..2caff77 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -1,5 +1,3 @@
+-
+-
+ #pragma once
+ 
+ #include <iostream>
+@@ -74,12 +72,14 @@ namespace mtm {
+ 
+             SortedList<T> copy;
+             if (!otherList.head) return;
++            /*
+             Node<T> *traversalO = otherList.head;
+             Node<T> *traversalC = copy.head;
+ 
+             while (traversalO) {
+-                traversalC = new Node(*traversalO);
++                traversalC = new Node<T>(*traversalO);
+             }
++             */
+ 
+ 
+ 
+
+commit 27933b1d5b877b42243331aff587026447319f98
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sat Jan 4 17:45:56 2025 +0200
+
+    Fix bugs in SortedList.h
+
+diff --git a/SortedList.h b/SortedList.h
+index 0586e79..3aff319 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -1,30 +1,34 @@
++
++
+ #pragma once
+ 
+ #include <iostream>
+ #include <stdexcept>
+ 
+ namespace mtm {
+-    template <typename T>
++    template<typename T>
+     struct Node {
+     public:
+         T data;
+-        Node<T>* next;
++        Node<T> *next;
++
+         Node() : next(nullptr) {}
++
+         explicit Node(const T data, Node<T> *next_ptr = nullptr) : data(data), next(next_ptr) {}
+ 
+         //copy constructor - recursive
+-        Node (const Node& other) : data(other.data), next(nullptr) {
++        Node(const Node &other) : data(other.data), next(nullptr) {
+             if (other.next) { //if other.next is null stop
+                 next = new Node(*other.next); // Recursively copy the next node
+             }
+         }
+ 
+-        Node& operator= (Node const &other) {
++        Node &operator=(Node const &other) {
+ 
+             if (this == &other) return *this;
+ 
+             data = other.data;
+-            Node* temp = next;
++            Node *temp = next;
+             delete temp;
+             next = other.next;
+             if (next) {
+@@ -37,25 +41,24 @@ namespace mtm {
+ 
+     // SORTED LIST
+     //Head is the largest
+-    template <typename T>
++    template<typename T>
+     class SortedList {
+         //head of the list and its tail.
+-        Node<T>* head;
+-        Node<T>* tail;
++        Node<T> *head;
++        Node<T> *tail;
+         int size;
+-        void deleteNodes()
+-        {
+-            Node<T>* temp = head;
+-            Node<T>* temp2 = temp;
+-            while (temp)
+-            {
++
++        void deleteNodes() {
++            Node<T> *temp = head;
++            Node<T> *temp2 = temp;
++            while (temp) {
+                 temp2 = temp;
+                 temp = temp->next;
+                 delete temp2;
+             }
+             delete temp;
+             head = nullptr;
+-            this->size=0;
++            this->size = 0;
+         }
+ 
+     public:
+@@ -68,32 +71,30 @@ namespace mtm {
+ 
+         //copy constructor
+         SortedList(SortedList<T> const &otherList) {
+-            /*
+-            SortedList<T> copy = new SortedList<T> ();
+-            if (!otherList.head) return copy;
+-            Node<T> *traversalO = otherList;
+-            Node<T> *traversalC = copy;
++
++            SortedList<T> copy;
++            if (!otherList.head) return;
++            Node<T> *traversalO = otherList.head;
++            Node<T> *traversalC = copy.head;
+ 
+             while (traversalO) {
+                 traversalC = new Node(*traversalO);
+             }
+-             */
++
+ 
+ 
+             try {
+-                Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr; //copy constructor called
++                Node<T>* headNode = otherList.head ? new Node<T>(*(otherList.head)) : nullptr; //copy constructor called
+ 
+                 head = headNode;
+-                Node<T>* temp = head;
++                Node<T> *temp = head;
+ 
+                 while (temp->next) { //reach the one bfr nullptr
+                     temp = temp->next;
+                 }
+                 tail = temp;
+ 
+-                temp = nullptr;
+-                delete temp;
+-            } catch (const std::bad_alloc& e) {
++            } catch (const std::bad_alloc &e) {
+                 deleteNodes();
+                 throw;
+             }
+@@ -112,8 +113,8 @@ namespace mtm {
+         }
+ 
+         //insert
+-        void insert (const T& value) {
+-            Node<T> newNode  = new Node<T> (value);
++        void insert(const T &value) {
++            Node<T>* newNode = new Node<T>(value);
+             Node<T>* traversal = head;
+ 
+             while (traversal->next != nullptr && traversal->next->data > value) {
+@@ -121,17 +122,14 @@ namespace mtm {
+                 traversal = traversal->next;
+             }
+ 
+-            newNode.next = traversal->next;
++            newNode->next = traversal->next;
+             traversal->next = newNode;
+         }
+ 
+ 
+ 
+-    };
+ 
+-    template <class T>
+-    class SortedList<T>::ConstIterator {
+-        /**
++        /** ConstIterator
+          * the class should support the following public interface:
+          * if needed, use =defualt / =delete
+          *
+@@ -148,36 +146,128 @@ namespace mtm {
+          *
+          */
+ 
++// ConstIterator definition
+         class ConstIterator {
+-            const Node<T>* current;
+         public:
+-            friend SortedList<T>;
+-            ConstIterator() = default;
+-            explicit ConstIterator(Node<T>* current): current(current){}
+-            // Overload for the comparison operator !=
+-            bool operator!=(const ConstIterator& itr) const {
+-                return current != itr.current;
+-            }
++            const Node<T> *current; // Pointer to the current node
++
++            ConstIterator() : current(nullptr) {}
++
++            explicit ConstIterator(const Node<T> *node) : current(node) {}
+ 
+-            // Overload for the dereference operator *
+-            const T& operator*() const {
++            // Dereference operator
++            const T &operator*() const {
+                 return current->data;
+             }
+ 
+-            // Overload for the postincrement operator ++
+-            ConstIterator& operator++() {
+-                if (!current) {
+-                    throw  std::out_of_range("iterating out of bounds");
++            // Pre-increment operator
++            ConstIterator &operator++() {
++                if (!current) { //if current i
++                    throw std::out_of_range("Iterator out of bounds");
+                 }
+                 current = current->next;
+                 return *this;
+             }
++
++            // Inequality operator
++            bool operator!=(const ConstIterator &other) const {
++                return current != other.current;
++            }
+         };
+-        ConstIterator begin() const{
+-            return SortedList::ConstIterator(head);
++
++// begin() and end() methods
++        ConstIterator begin() const {
++            return ConstIterator(head);
+         }
+-        ConstIterator end() const{
++
++        ConstIterator end() const {
+             return ConstIterator(nullptr);
+         }
++
++/**
++ * removes the node the itr iterator points to.
++ * @param itr iterator to delete
++ */
++        void remove(const ConstIterator &itr) {
++            if (!itr.current) return; //nullptr
++            if (!head) return; //empty list
++
++            if (itr.current == head) {
++                Node<T>* temp = head;
++                head = head->next;
++                delete temp;
++                return;
++            }
++
++            // traverse until we find the node preceding the desired one
++
++            Node<T>* prev = head;
++
++            while (prev->next && prev->next != itr.current) {
++                prev = prev->next;
++            }
++
++            // delete
++            Node<T>* temp = prev->next;
++            prev->next = temp->next;
++
++            delete temp;
++
++            if (prev->next == nullptr) {
++                tail = prev; // Update the tail if the last node is removed
++            }
++
++            size--;
++
++        }
++
++/**
++ * retruns size of list
++ * @return
++ */
++        int length () {
++            return size;
++        }
++
++
++// filter class, accepts an operation
++        template<class Condition>
++/**
++ * filters the list according to a certain given condition
++ * @tparam Condition condition generic class that has a condition
++ * @param condition condition to filter by
++ * @return
++ */
++        SortedList filter(Condition condition) const {
++            SortedList result;
++            Node<T>* current = head;
++            while(current){
++                if (condition(current->data)) {
++                    result.insert(current->data);
++                }
++                current = current->next;
++            }
++            return result;
++        }
++
++/**
++ * makes a new SortedList with operation applied on all the nodes in the list
++ * @tparam Operation operation generic class
++ * @param op operation to apply to nodes
++ * @return SortedList with the modified nodes according to the operation
++ */
++        template<class Operation>
++        SortedList apply(Operation op) const {
++            SortedList result;
++            Node<T>* current = head;
++            while(current) {
++                result.insert(op(current->data));
++                current = current->next;
++            }
++            return result;
++        }
++
++
++
+     };
+ }
+\ No newline at end of file
+
+commit bc8d82913fbb99bd3e1c36ae27d235c6a3666554
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sat Jan 4 14:41:13 2025 +0200
+
+    Implement insert function and constIterator.
+
+diff --git a/SortedList.h b/SortedList.h
+index 523740d..0586e79 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -10,7 +10,7 @@ namespace mtm {
+         T data;
+         Node<T>* next;
+         Node() : next(nullptr) {}
+-        explicit Node(const T data, Node<T> *ptr = nullptr) : data(data), next(ptr) {}
++        explicit Node(const T data, Node<T> *next_ptr = nullptr) : data(data), next(next_ptr) {}
+ 
+         //copy constructor - recursive
+         Node (const Node& other) : data(other.data), next(nullptr) {
+@@ -79,23 +79,28 @@ namespace mtm {
+             }
+              */
+ 
+-            //copy constructor called
+ 
+-            Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr;
++            try {
++                Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr; //copy constructor called
+ 
+-            head = headNode;
+-            Node<T>* temp = head;
++                head = headNode;
++                Node<T>* temp = head;
+ 
+-            while (temp->next) { //reach the one bfr nullptr
+-                temp = temp->next;
++                while (temp->next) { //reach the one bfr nullptr
++                    temp = temp->next;
++                }
++                tail = temp;
++
++                temp = nullptr;
++                delete temp;
++            } catch (const std::bad_alloc& e) {
++                deleteNodes();
++                throw;
+             }
+-            tail = temp;
+ 
+-            temp = nullptr;
+-            delete temp;
+         }
+ 
+-        //default
++        //default constructor
+         SortedList() {
+             head = nullptr;
+             size = 0;
+@@ -106,6 +111,22 @@ namespace mtm {
+             deleteNodes();
+         }
+ 
++        //insert
++        void insert (const T& value) {
++            Node<T> newNode  = new Node<T> (value);
++            Node<T>* traversal = head;
++
++            while (traversal->next != nullptr && traversal->next->data > value) {
++                //for Task object this uses the > operator that is overloaded
++                traversal = traversal->next;
++            }
++
++            newNode.next = traversal->next;
++            traversal->next = newNode;
++        }
++
++
++
+     };
+ 
+     template <class T>
+@@ -126,5 +147,37 @@ namespace mtm {
+          * 7. operator!= - returns true if the iterator points to a different element
+          *
+          */
++
++        class ConstIterator {
++            const Node<T>* current;
++        public:
++            friend SortedList<T>;
++            ConstIterator() = default;
++            explicit ConstIterator(Node<T>* current): current(current){}
++            // Overload for the comparison operator !=
++            bool operator!=(const ConstIterator& itr) const {
++                return current != itr.current;
++            }
++
++            // Overload for the dereference operator *
++            const T& operator*() const {
++                return current->data;
++            }
++
++            // Overload for the postincrement operator ++
++            ConstIterator& operator++() {
++                if (!current) {
++                    throw  std::out_of_range("iterating out of bounds");
++                }
++                current = current->next;
++                return *this;
++            }
++        };
++        ConstIterator begin() const{
++            return SortedList::ConstIterator(head);
++        }
++        ConstIterator end() const{
++            return ConstIterator(nullptr);
++        }
+     };
+ }
+\ No newline at end of file
+
+commit f9ce6369716ca3da5ca33dae655d04c8cef88bdb
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sat Jan 4 14:08:34 2025 +0200
+
+    Copy constructor for SortedList.h
+
+diff --git a/SortedList.h b/SortedList.h
+index 8cfe966..523740d 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -7,7 +7,7 @@ namespace mtm {
+     template <typename T>
+     struct Node {
+     public:
+-        const T data;
++        T data;
+         Node<T>* next;
+         Node() : next(nullptr) {}
+         explicit Node(const T data, Node<T> *ptr = nullptr) : data(data), next(ptr) {}
+@@ -19,10 +19,24 @@ namespace mtm {
+             }
+         }
+ 
+-        Node& operator= (Node const &other) = delete;
++        Node& operator= (Node const &other) {
++
++            if (this == &other) return *this;
++
++            data = other.data;
++            Node* temp = next;
++            delete temp;
++            next = other.next;
++            if (next) {
++                next = Node(other.next); //copy constructor called
++            }
++        }
++
+ 
+     };
+ 
++    // SORTED LIST
++    //Head is the largest
+     template <typename T>
+     class SortedList {
+         //head of the list and its tail.
+@@ -52,6 +66,35 @@ namespace mtm {
+ 
+         //c`tors & d`tors:
+ 
++        //copy constructor
++        SortedList(SortedList<T> const &otherList) {
++            /*
++            SortedList<T> copy = new SortedList<T> ();
++            if (!otherList.head) return copy;
++            Node<T> *traversalO = otherList;
++            Node<T> *traversalC = copy;
++
++            while (traversalO) {
++                traversalC = new Node(*traversalO);
++            }
++             */
++
++            //copy constructor called
++
++            Node<T> headNode = otherList.head ? new Node<T> (otherList.head): nullptr;
++
++            head = headNode;
++            Node<T>* temp = head;
++
++            while (temp->next) { //reach the one bfr nullptr
++                temp = temp->next;
++            }
++            tail = temp;
++
++            temp = nullptr;
++            delete temp;
++        }
++
+         //default
+         SortedList() {
+             head = nullptr;
+
+commit f2257ca06ed6fe54397b41ba3cf622ba67fcc678
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Sat Jan 4 13:31:17 2025 +0200
+
+    Make copy constructor for Node.
+
+diff --git a/SortedList.h b/SortedList.h
+index cc87e44..8cfe966 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -10,30 +10,58 @@ namespace mtm {
+         const T data;
+         Node<T>* next;
+         Node() : next(nullptr) {}
+-        explicit Node(const T data, Node<T> *ptr = nullptr) :
+-                data(data), next(ptr) {}
++        explicit Node(const T data, Node<T> *ptr = nullptr) : data(data), next(ptr) {}
++
++        //copy constructor - recursive
++        Node (const Node& other) : data(other.data), next(nullptr) {
++            if (other.next) { //if other.next is null stop
++                next = new Node(*other.next); // Recursively copy the next node
++            }
++        }
++
++        Node& operator= (Node const &other) = delete;
++
+     };
+-        template <typename T>
+-        class SortedList {
+-            //head of the list and its tail.
+-            Node<T>* head;
+-            Node<T>* tail;
+-            int size;
+-            void deleteNodes()
+-            {
+-                Node<T>* temp=head;
+-                while (temp)
+-                {
+-                    Node<T>* temp2= temp;
+-                    temp = temp->next;
+-                    delete temp2;
+-                }
+ 
+-                this->size=0;
+-            };
++    template <typename T>
++    class SortedList {
++        //head of the list and its tail.
++        Node<T>* head;
++        Node<T>* tail;
++        int size;
++        void deleteNodes()
++        {
++            Node<T>* temp = head;
++            Node<T>* temp2 = temp;
++            while (temp)
++            {
++                temp2 = temp;
++                temp = temp->next;
++                delete temp2;
++            }
++            delete temp;
++            head = nullptr;
++            this->size=0;
++        }
+ 
+     public:
++        //returns length of list
++        int length() const {
++            return this->size;
++        }
++
++        //c`tors & d`tors:
++
++        //default
++        SortedList() {
++            head = nullptr;
++            size = 0;
++        }
+ 
++        //default
++        ~SortedList() {
++            deleteNodes();
++        }
+ 
+     };
+ 
+
+commit e4a7e7a181873afdd4e44900852a547d871f9c73
+Author: moham <agbariam@campus.technion.ac .il>
+Date:   Sat Jan 4 12:59:30 2025 +0200
+
+    4.2.1
+
+diff --git a/SortedList.h b/SortedList.h
+index 50238db..cc87e44 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -13,31 +13,27 @@ namespace mtm {
+         explicit Node(const T data, Node<T> *ptr = nullptr) :
+                 data(data), next(ptr) {}
+     };
+-    class SortedList {
++        template <typename T>
++        class SortedList {
++            //head of the list and its tail.
++            Node<T>* head;
++            Node<T>* tail;
++            int size;
++            void deleteNodes()
++            {
++                Node<T>* temp=head;
++                while (temp)
++                {
++                    Node<T>* temp2= temp;
++                    temp = temp->next;
++                    delete temp2;
++                }
++
++                this->size=0;
++            };
++
+     public:
+-        /**
+-         *
+-         * the class should support the following public interface:
+-         * if needed, use =defualt / =delete
+-         *
+-         * constructors and destructor:
+-         * 1. SortedList() - creates an empty list.
+-         * 2. copy constructor
+-         * 3. operator= - assignment operator
+-         * 4. ~SortedList() - destructor
+-         *
+-         * iterator:
+-         * 5. class ConstIterator;
+-         * 6. begin method
+-         * 7. end method
+-         *
+-         * functions:
+-         * 8. insert - inserts a new element to the list
+-         * 9. remove - removes an element from the list
+-         * 10. length - returns the number of elements in the list
+-         * 11. filter - returns a new list with elements that satisfy a given condition
+-         * 12. apply - returns a new list with elements that were modified by an operation
+-         */
++
+ 
+     };
+ 
+
+commit d545fa5a37d5bca3cc0069d150fba4ce608cdbc7
+Author: moham <agbariam@campus.technion.ac .il>
+Date:   Sat Jan 4 12:38:02 2025 +0200
+
+    4.2.1
+
+diff --git a/SortedList.h b/SortedList.h
+index e267592..50238db 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -4,58 +4,60 @@
+ #include <stdexcept>
+ 
+ namespace mtm {
+-
+     template <typename T>
+-    class SortedList
+-    {
+-
+-      struct Node {
+-            T data;
+-            Node *next;
+-                Node(const T &data) : data(data), next(nullptr) {}
+-            };
+-            Node *head;
+-            int list_size;
++    struct Node {
++    public:
++        const T data;
++        Node<T>* next;
++        Node() : next(nullptr) {}
++        explicit Node(const T data, Node<T> *ptr = nullptr) :
++                data(data), next(ptr) {}
++    };
++    class SortedList {
+     public:
+-        //defalut constructor
+-        SortedList();
+-        //paramitrizied constructor
+-        SortedList(const SortedList &other);
+-        // assignment operator
+-        SortedList& operator=(const SortedList &other);
+-        //adding new element
+-        void insert(const Node &other);
+-        //destructor
+-        ~SortedList();
+-        //remove element
+-       // void remove(ConstIterator it);
+-       int length() const;
+-        template<typename Predicate>
+-        SortedList filter(Predicate condition) const{};
+-        template<typename Operation>
+-        SortedList apply(Operation operation) const{};
+-      //  ConstIterator begin()const{};
+-      //  ConstIterator end()const{};
++        /**
++         *
++         * the class should support the following public interface:
++         * if needed, use =defualt / =delete
++         *
++         * constructors and destructor:
++         * 1. SortedList() - creates an empty list.
++         * 2. copy constructor
++         * 3. operator= - assignment operator
++         * 4. ~SortedList() - destructor
++         *
++         * iterator:
++         * 5. class ConstIterator;
++         * 6. begin method
++         * 7. end method
++         *
++         * functions:
++         * 8. insert - inserts a new element to the list
++         * 9. remove - removes an element from the list
++         * 10. length - returns the number of elements in the list
++         * 11. filter - returns a new list with elements that satisfy a given condition
++         * 12. apply - returns a new list with elements that were modified by an operation
++         */
++
++    };
+ 
+-        };
+-/*
+     template <class T>
+     class SortedList<T>::ConstIterator {
+-    /**
+-     * the class should support the following public interface:
+-     * if needed, use =defualt / =delete
+-     *
+-     * constructors and destructor:
+-     * 1. a ctor(or ctors) your implementation needs
+-     * 2. copy constructor
+-     * 3. operator= - assignment operator
+-     * 4. ~ConstIterator() - destructor
+-     *
+-     * operators:
+-     * 5. operator* - returns the element the iterator points to
+-     * 6. operator++ - advances the iterator to the next element
+-     * 7. operator!= - returns true if the iterator points to a different element
+-     *
+-     */
++        /**
++         * the class should support the following public interface:
++         * if needed, use =defualt / =delete
++         *
++         * constructors and destructor:
++         * 1. a ctor(or ctors) your implementation needs
++         * 2. copy constructor
++         * 3. operator= - assignment operator
++         * 4. ~ConstIterator() - destructor
++         *
++         * operators:
++         * 5. operator* - returns the element the iterator points to
++         * 6. operator++ - advances the iterator to the next element
++         * 7. operator!= - returns true if the iterator points to a different element
++         *
++         */
+     };
+-/* */
+\ No newline at end of file
++}
+\ No newline at end of file
+
+commit d904c06770a7167812719e80bf9b9c4f16f65c4a
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Fri Jan 3 16:28:15 2025 +0200
+
+    Implement print functions, write merge private function.
+
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+index 70c6406..71ec4af 100644
+--- a/TaskManager.cpp
++++ b/TaskManager.cpp
+@@ -31,7 +31,7 @@ int TaskManager::findPerson (const string& name) const {
+     return MAX_PERSONS;
+ }
+ 
+-bool TaskManager::isTaskType(const Task &task, string &type) {
++bool TaskManager::isTaskType(const Task &task, const string &type) {
+ 
+     string ogType = taskTypeToString(task.getType());
+     return (ogType == type) ;
+@@ -58,6 +58,29 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
+ }
+ 
+ 
++SortedList<Task> TaskManager::merge(const string& typeFilter) const {
++
++    typedef mtm::SortedList<Task> TaskList;
++
++    TaskList merged;
++
++    for (int i = 0; i < personsCount; i++) {
++        TaskList currTasks = persons[i].getTasks();
++
++        if (typeFilter != "no_filter") { //we want filter
++            //lambda expression
++            currTasks = currTasks.filter([typeFilter](const Task& task) { return isTaskType(task, typeFilter); });
++        }
++
++        for (const auto &taskLocal : currTasks) {
++            merged.insert(taskLocal);
++        }
++    }
++
++
++    return merged;
++}
++
+ 
+ void TaskManager::completeTask(const string &personName) {
+ 
+@@ -99,8 +122,6 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
+ }
+ 
+ 
+-
+-
+ // Print functions
+ 
+ void TaskManager::printAllEmployees() const {
+@@ -110,6 +131,38 @@ void TaskManager::printAllEmployees() const {
+     }
+ }
+ 
++void TaskManager::printTasksByType(TaskType type) const {
++
++    typedef mtm::SortedList<Task> TaskList;
++
++    string typeString = taskTypeToString(type);
++    TaskList mergedList = merge(typeString);
++
++    for (const Task& localTasks : mergedList) {
++        std::cout << localTasks << std::endl;
++    }
++}
++
++void TaskManager::printAllTasks() const {
++    typedef mtm::SortedList<Task> TaskList;
++
++    //string typeString = taskTypeToString(type);
++    TaskList mergedList = merge();
++
++    for (const Task& localTasks : mergedList) {
++        std::cout << localTasks << std::endl;
++    }
++
++}
++
++
++
++
++
++
++
++
++
+ 
+ 
+ 
+diff --git a/TaskManager.h b/TaskManager.h
+index d19d1af..def728c 100644
+--- a/TaskManager.h
++++ b/TaskManager.h
+@@ -49,8 +49,15 @@ private:
+      * @param type Desired type, string form.
+      * @return true if task is of type type
+      */
+-    static bool isTaskType (const Task& task, string& type);
++    static bool isTaskType (const Task& task, const string& type);
+ 
++    /**
++     * Merges all tasks lists of every person into a single list.
++     * List is sorted chronologically by person and by priority ranking.
++     * @param typeFilter (optional) filter to apply so that only elements with the specific type will be in the list.
++     * @return a sortedList if type Task with all the tasks.
++     */
++    SortedList<Task> merge (const string& typeFilter = "no_filter") const;
+ 
+ 
+ public:
+
+commit f5a8052acae3dd9b8a2bc797ccae2d15252409e3
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Fri Jan 3 15:54:59 2025 +0200
+
+    Fix index issue assignTask.
+
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+index 44c1a66..70c6406 100644
+--- a/TaskManager.cpp
++++ b/TaskManager.cpp
+@@ -51,7 +51,7 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
+     if (index == MAX_PERSONS) {
+         //person not found, we need to add
+         addPerson(personName);
+-        index = personsCount; //set ID to latest person
++        index = personsCount-1; //set ID to latest person
+     }
+ 
+     persons[index].assignTask(task);
+@@ -81,7 +81,7 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
+ 
+         //traverse the list
+         //code for iterator not done yet -> syntax error
+-        for (const Task &task: tasksList) { //iterate over tasks in list
++        for (const Task &task : tasksList) { //iterate over tasks in list
+ 
+             if (taskTypeToString(task.getType()) == typeFilter) { //found the type
+                 Task updatedTask(task.getPriority() + priority, type, task.getDescription());
+@@ -105,8 +105,8 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
+ 
+ void TaskManager::printAllEmployees() const {
+ 
+-    for (int i = 0; i < personsCount; i++) {
+-        std::cout << persons[i];
++    for (int i = 0; i < personsCount && i < MAX_PERSONS; i++) {
++        std::cout << persons[i] << std::endl;
+     }
+ }
+ 
+
+commit cc953b725f184dffb6e50d09a1cd11828067246e
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Fri Jan 3 15:38:32 2025 +0200
+
+    Remove delete from bumpPriorityByType.
+
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+index 199644c..44c1a66 100644
+--- a/TaskManager.cpp
++++ b/TaskManager.cpp
+@@ -67,13 +67,14 @@ void TaskManager::completeTask(const string &personName) {
+     persons[index].completeTask();
+ }
+ 
+-
+ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
+ 
+     typedef mtm::SortedList<Task> TasksList;
+ 
+     if (priority <= 0) return; // nothing to do if negative or 0.
+ 
++    string typeFilter = taskTypeToString(type);
++
+     for (int i = 0; i < personsCount; i++) {
+         TasksList tasksList = persons[i].getTasks(); // REFERENCE to getTasks, NOT A COPY
+         TasksList updatedTasksList; //new empty list made using default ctor
+@@ -82,7 +83,7 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
+         //code for iterator not done yet -> syntax error
+         for (const Task &task: tasksList) { //iterate over tasks in list
+ 
+-            if (taskTypeToString(task.getType()) == type) { //found the type
++            if (taskTypeToString(task.getType()) == typeFilter) { //found the type
+                 Task updatedTask(task.getPriority() + priority, type, task.getDescription());
+                 updatedTask.setId(task.getId());
+                 updatedTasksList.insert(updatedTask);
+@@ -92,7 +93,7 @@ void TaskManager::bumpPriorityByType(TaskType type, int priority) {
+         } //tasksList loo[
+ 
+         persons[i].setTasks(updatedTasksList);
+-        delete &tasksList;
++        //delete &tasksList; no need wasn't allocated here
+ 
+     } //persons loop
+ }
+
+commit 5df0434085bd44ae5395a95f155dfefb723d0fb9
+Merge: 4b2e2a6 a6dd91e
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Fri Jan 3 15:26:33 2025 +0200
+
+    Merge remote-tracking branch 'origin/main'
+
+commit 4b2e2a6a77f0514e532678999c39f87a1bb12e26
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Fri Jan 3 15:26:15 2025 +0200
+
+    Implement completeTask and bumpPriorityByType.
+
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+index 1227e88..199644c 100644
+--- a/TaskManager.cpp
++++ b/TaskManager.cpp
+@@ -5,6 +5,7 @@
+ #include "TaskManager.h"
+ 
+ // Private Functions
++
+ void TaskManager::addPerson(const string &name) {
+ 
+     if (personsCount == MAX_PERSONS) {
+@@ -23,7 +24,7 @@ void TaskManager::addPerson(const string &name) {
+ 
+ }
+ 
+-int TaskManager::findPerson (const string& name) {
++int TaskManager::findPerson (const string& name) const {
+     for (int i = 0; i < MAX_PERSONS; i++) {
+         if (persons[i].getName() == name) return i;
+     }
+@@ -58,3 +59,57 @@ void TaskManager::assignTask(const string &personName, const Task &task) {
+ 
+ 
+ 
++void TaskManager::completeTask(const string &personName) {
++
++    int index = findPerson(personName);
++    if (index == MAX_PERSONS) return; // not in company, nothing to do here.
++
++    persons[index].completeTask();
++}
++
++
++void TaskManager::bumpPriorityByType(TaskType type, int priority) {
++
++    typedef mtm::SortedList<Task> TasksList;
++
++    if (priority <= 0) return; // nothing to do if negative or 0.
++
++    for (int i = 0; i < personsCount; i++) {
++        TasksList tasksList = persons[i].getTasks(); // REFERENCE to getTasks, NOT A COPY
++        TasksList updatedTasksList; //new empty list made using default ctor
++
++        //traverse the list
++        //code for iterator not done yet -> syntax error
++        for (const Task &task: tasksList) { //iterate over tasks in list
++
++            if (taskTypeToString(task.getType()) == type) { //found the type
++                Task updatedTask(task.getPriority() + priority, type, task.getDescription());
++                updatedTask.setId(task.getId());
++                updatedTasksList.insert(updatedTask);
++            } else {
++                updatedTasksList.insert(task);
++            }
++        } //tasksList loo[
++
++        persons[i].setTasks(updatedTasksList);
++        delete &tasksList;
++
++    } //persons loop
++}
++
++
++
++
++// Print functions
++
++void TaskManager::printAllEmployees() const {
++
++    for (int i = 0; i < personsCount; i++) {
++        std::cout << persons[i];
++    }
++}
++
++
++
++
++
+diff --git a/TaskManager.h b/TaskManager.h
+index 92fd855..d19d1af 100644
+--- a/TaskManager.h
++++ b/TaskManager.h
+@@ -21,6 +21,8 @@ private:
+     // Additional private fields
+ 
+     Person persons [MAX_PERSONS]; // array of persons with tasks assigned
++    //Note: first person added gets index 0, second 1,..., last MAX_PERSONS-1.
++
+     int personsCount; // number of Persons already in the array
+     int countID; // internal ID counter that is incremented whenever a person is added
+ 
+@@ -39,7 +41,7 @@ private:
+      * @param name name of person to find
+      * @return index of person if found. If not returns MAX_PERSONS
+      */
+-    int findPerson (const string& name);
++    int findPerson (const string& name) const;
+ 
+     /**
+      * Check if task has the desired type.
+
+commit a6dd91e595adb7d82bdf8343ec133a180bdcd298
+Author: moham <agbariam@campus.technion.ac .il>
+Date:   Fri Jan 3 15:12:43 2025 +0200
+
+    4.2.1
+
+diff --git a/SortedList.h b/SortedList.h
+index 7ccef04..e267592 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -34,11 +34,11 @@ namespace mtm {
+         SortedList filter(Predicate condition) const{};
+         template<typename Operation>
+         SortedList apply(Operation operation) const{};
+-        ConstIterator begin()const{};
+-        ConstIterator end()const{};
++      //  ConstIterator begin()const{};
++      //  ConstIterator end()const{};
+ 
+         };
+-
++/*
+     template <class T>
+     class SortedList<T>::ConstIterator {
+     /**
+@@ -58,5 +58,4 @@ namespace mtm {
+      *
+      */
+     };
+-}
+ /* */
+\ No newline at end of file
+
+commit 2b63a74deb6785cf75b28c91bed747a899dd49b2
+Author: moham <agbariam@campus.technion.ac .il>
+Date:   Fri Jan 3 15:11:35 2025 +0200
+
+    4.2.1
+
+diff --git a/SortedList.h b/SortedList.h
+index 44a9643..7ccef04 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -8,6 +8,7 @@ namespace mtm {
+     template <typename T>
+     class SortedList
+     {
++
+       struct Node {
+             T data;
+             Node *next;
+
+commit 2c9219908c49d87bf339f1715190917fc3272d7f
+Author: moham <agbariam@campus.technion.ac .il>
+Date:   Fri Jan 3 15:11:03 2025 +0200
+
+    4.2.1
+
+diff --git a/SortedList.h b/SortedList.h
+index ddb0d8e..44a9643 100644
+--- a/SortedList.h
++++ b/SortedList.h
+@@ -6,33 +6,37 @@
+ namespace mtm {
+ 
+     template <typename T>
+-    class SortedList {
++    class SortedList
++    {
++      struct Node {
++            T data;
++            Node *next;
++                Node(const T &data) : data(data), next(nullptr) {}
++            };
++            Node *head;
++            int list_size;
+     public:
+-        /**
+-         *
+-         * the class should support the following public interface:
+-         * if needed, use =defualt / =delete
+-         *
+-         * constructors and destructor:
+-         * 1. SortedList() - creates an empty list.
+-         * 2. copy constructor
+-         * 3. operator= - assignment operator
+-         * 4. ~SortedList() - destructor
+-         *
+-         * iterator:
+-         * 5. class ConstIterator;
+-         * 6. begin method
+-         * 7. end method
+-         *
+-         * functions:
+-         * 8. insert - inserts a new element to the list
+-         * 9. remove - removes an element from the list
+-         * 10. length - returns the number of elements in the list
+-         * 11. filter - returns a new list with elements that satisfy a given condition
+-         * 12. apply - returns a new list with elements that were modified by an operation
+-         */
++        //defalut constructor
++        SortedList();
++        //paramitrizied constructor
++        SortedList(const SortedList &other);
++        // assignment operator
++        SortedList& operator=(const SortedList &other);
++        //adding new element
++        void insert(const Node &other);
++        //destructor
++        ~SortedList();
++        //remove element
++       // void remove(ConstIterator it);
++       int length() const;
++        template<typename Predicate>
++        SortedList filter(Predicate condition) const{};
++        template<typename Operation>
++        SortedList apply(Operation operation) const{};
++        ConstIterator begin()const{};
++        ConstIterator end()const{};
+ 
+-    };
++        };
+ 
+     template <class T>
+     class SortedList<T>::ConstIterator {
+@@ -54,4 +58,4 @@ namespace mtm {
+      */
+     };
+ }
+-
++/* */
+\ No newline at end of file
+
+commit 434fefeff92f17a5b6415800d0cf2259055a78d8
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Fri Jan 3 13:14:15 2025 +0200
+
+    Implement private funcs, ctor, assignTask.
+
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+index 674c2d8..1227e88 100644
+--- a/TaskManager.cpp
++++ b/TaskManager.cpp
+@@ -1,5 +1,60 @@
+ //
+-// Created by Samir Daoud on 2/1/25.
++// Created by Samir Daoud and Mohammad Agbaria on 2/1/25.
+ //
+ 
+ #include "TaskManager.h"
++
++// Private Functions
++void TaskManager::addPerson(const string &name) {
++
++    if (personsCount == MAX_PERSONS) {
++        throw std::runtime_error("Persons limit reached. Max is ten people.");
++    }
++
++    //space left - add new person
++    Person newPerson (name);
++
++    typedef SortedList<Task> TaskList ; //import SortedList type Task
++    TaskList emptyList; // create new list using default constructor
++    newPerson.setTasks(emptyList);
++    persons[personsCount] = newPerson; //added using default assignment operator
++    //we can use default assignment op since we want to add by reference
++    personsCount++;
++
++}
++
++int TaskManager::findPerson (const string& name) {
++    for (int i = 0; i < MAX_PERSONS; i++) {
++        if (persons[i].getName() == name) return i;
++    }
++    return MAX_PERSONS;
++}
++
++bool TaskManager::isTaskType(const Task &task, string &type) {
++
++    string ogType = taskTypeToString(task.getType());
++    return (ogType == type) ;
++}
++
++// Constructors
++
++TaskManager::TaskManager() : personsCount(0), countID(0) {} // default constructor
++
++
++// Public Functions
++
++void TaskManager::assignTask(const string &personName, const Task &task) {
++
++    int index = findPerson(personName);
++
++    if (index == MAX_PERSONS) {
++        //person not found, we need to add
++        addPerson(personName);
++        index = personsCount; //set ID to latest person
++    }
++
++    persons[index].assignTask(task);
++}
++
++
++
+diff --git a/TaskManager.h b/TaskManager.h
+index 63f255f..92fd855 100644
+--- a/TaskManager.h
++++ b/TaskManager.h
+@@ -20,8 +20,9 @@ private:
+ 
+     // Additional private fields
+ 
+-    Person persons [MAX_PERSONS]; //array of persons with tasks assigned
+-    int countID; //internal ID counter that is incremented whenever a person is added
++    Person persons [MAX_PERSONS]; // array of persons with tasks assigned
++    int personsCount; // number of Persons already in the array
++    int countID; // internal ID counter that is incremented whenever a person is added
+ 
+ 
+     // Additional private functions
+@@ -29,9 +30,24 @@ private:
+     /**
+      * @brief adds a person to the people in the taskManager.
+      * @param name - name of Person to be added.
+-     * @throw runtime_error - if adding person failed.
++     * @throw runtime_error - if adding person failed (no space left).
+      */
+-    void addPerson (string& name);
++    void addPerson (const string& name);
++
++    /**
++     * Finds index of person in the array persons
++     * @param name name of person to find
++     * @return index of person if found. If not returns MAX_PERSONS
++     */
++    int findPerson (const string& name);
++
++    /**
++     * Check if task has the desired type.
++     * @param task Task to check its type.
++     * @param type Desired type, string form.
++     * @return true if task is of type type
++     */
++    static bool isTaskType (const Task& task, string& type);
+ 
+ 
+ 
+
+commit 41fa6c890cb99d2172ee674cc8c48c282259dad5
+Author: sdaoud <62612957+SamirDaoud@users.noreply.github.com>
+Date:   Fri Jan 3 12:24:19 2025 +0200
+
+    Add private fields to header file, new source file.
+
+diff --git a/TaskManager.cpp b/TaskManager.cpp
+new file mode 100644
+index 0000000..674c2d8
+--- /dev/null
++++ b/TaskManager.cpp
+@@ -0,0 +1,5 @@
++//
++// Created by Samir Daoud on 2/1/25.
++//
++
++#include "TaskManager.h"
+diff --git a/TaskManager.h b/TaskManager.h
+index f1acc89..63f255f 100644
+--- a/TaskManager.h
++++ b/TaskManager.h
+@@ -2,9 +2,14 @@
+ #pragma once
+ 
+ #include "Task.h"
++#include "Person.h"
+ 
+ /**
+  * @brief Class managing tasks assigned to multiple persons.
++ *
++ * TaskManager includes and array of people (Person).
++ * Each person has a number of tasks (SortedList of Tasks within the Person class).
++ * TaskManager's job is to assign and manage tasks to the Persons within the array.
+  */
+ class TaskManager {
+ private:
+@@ -13,7 +18,22 @@ private:
+      */
+     static const int MAX_PERSONS = 10;
+ 
+-    // Note - Additional private fields and methods can be added if needed.
++    // Additional private fields
++
++    Person persons [MAX_PERSONS]; //array of persons with tasks assigned
++    int countID; //internal ID counter that is incremented whenever a person is added
++
++
++    // Additional private functions
++
++    /**
++     * @brief adds a person to the people in the taskManager.
++     * @param name - name of Person to be added.
++     * @throw runtime_error - if adding person failed.
++     */
++    void addPerson (string& name);
++
++
+ 
+ public:
+     /**
+
+commit a3481f8f37f2fbd59d824d4020f19d434ec6f9a5
+Author: Ron Raphaeli <102682845+ronraphaeli@users.noreply.github.com>
+Date:   Sun Dec 22 10:44:54 2024 +0200
+
+    Update Task.cpp
+
+diff --git a/Task.cpp b/Task.cpp
+index 176989a..b5d3670 100644
+--- a/Task.cpp
++++ b/Task.cpp
+@@ -50,7 +50,10 @@ ostream &operator<<(ostream& os, const Task& task) {
+ }
+ 
+ bool operator>(const Task& lhs, const Task& rhs) {
+-    return lhs.m_priority > rhs.m_priority;
++    if (lhs.m_priority == rhs.m_priority) {
++            return lhs.m_id < rhs.m_id; 
++        }
++        return lhs.m_priority > rhs.m_priority;
+ }
+ 
+ 
+
+commit ef076db7052b54a8918ae43ebe390b6a7a629909
+Author: Ron Raphaeli <102682845+ronraphaeli@users.noreply.github.com>
+Date:   Fri Dec 20 17:02:30 2024 +0200
+
+    Update README.md
+
+diff --git a/README.md b/README.md
+index 22bd23c..8b87dca 100644
+--- a/README.md
++++ b/README.md
+@@ -2,6 +2,5 @@
+ 
+ This repository contains all supplied files for the first homework assignment in the course "Introduction to Systems Programming" (234124) at the Technion.
+ 
+-You may find the full instructions for this assignment on the [course's website](https://moodle2324.technion.ac.il/course/view.php?id=3205).
+-
+-Good luck and have fun!
++You may find the full instructions for this assignment on the course's website.
++Good luck, and have fun!
+
+commit ef8a3ce100827ef3fead32a4927a3566fe3d0d5d
+Author: Ron Raphaeli <102682845+ronraphaeli@users.noreply.github.com>
+Date:   Fri Dec 20 17:01:08 2024 +0200
+
+    Add files via upload
+
+diff --git a/Person.cpp b/Person.cpp
+new file mode 100644
+index 0000000..4a6b9aa
+--- /dev/null
++++ b/Person.cpp
+@@ -0,0 +1,51 @@
++
++#include "Person.h"
++using std::endl;
++
++// Constructor
++Person::Person(const string &name) : m_name(name) {}
++
++// Getters and setters
++string Person::getName() const {
++    return m_name;
++}
++
++const SortedList<Task>& Person::getTasks() const {
++    return m_tasks;
++}
++
++void Person::setTasks(const SortedList<Task>& tasks) {
++    m_tasks = tasks;
++}
++
++// Other methods
++void Person::assignTask(const Task& task) {
++    m_tasks.insert(task);
++}
++
++
++int Person::completeTask() {
++    if (m_tasks.length() == 0) {
++        throw std::runtime_error("No tasks assigned to this person.");
++    }
++    int taskId = (*m_tasks.begin()).getId();
++    m_tasks.remove(m_tasks.begin());
++    return taskId;
++}
++
++const Task& Person::getHighestPriorityTask() const {
++    if (m_tasks.length() == 0) {
++        throw std::runtime_error("No tasks assigned to this person.");
++    }
++    return (*m_tasks.begin());
++}
++
++// Overloaded operators
++ostream& operator<<(ostream& os, const Person& person) {
++    os << "Person: " << person.m_name << endl;
++    // Assuming the SortedList has an appropriate method to list tasks
++    for (const Task& t: person.m_tasks) {
++        os << t << endl;
++    }
++    return os;
++}
+diff --git a/Person.h b/Person.h
+new file mode 100644
+index 0000000..aea7f69
+--- /dev/null
++++ b/Person.h
+@@ -0,0 +1,79 @@
++
++#pragma once
++
++#include <iostream>
++#include <string>
++#include "Task.h"
++#include "SortedList.h"
++
++using mtm::SortedList;
++using std::ostream;
++using std::string;
++
++/**
++ * @brief Class representing a person who can have tasks assigned.
++ */
++class Person {
++private:
++    string m_name;
++    SortedList<Task> m_tasks;
++
++public:
++    /**
++     * @brief Constructor to create a Person object.
++     *
++     * @param name The name of the person (default is an empty string).
++     */
++    Person(const string& name = "");
++
++    /**
++     * @brief Gets the name of the person.
++     *
++     * @return string The name of the person.
++     */
++    string getName() const;
++
++    /**
++     * @brief Gets the list of tasks assigned to the person.
++     *
++     * @return const SortedList<Task>& The list of tasks assigned to the person.
++     */
++    const SortedList<Task>& getTasks() const;
++
++    /**
++     * @brief Sets the list of tasks for the person.
++     *
++     * @param tasks The list of tasks to be set.
++     */
++    void setTasks(const SortedList<Task>& tasks);
++
++    /**
++     * @brief Assigns a new task to the person.
++     *
++     * @param task The task to be assigned.
++     */
++    void assignTask(const Task& task);
++
++    /**
++     * @brief Completes the highest priority task from the list of tasks.
++     *
++     * @return int The ID of the completed task.
++     */
++    int completeTask();
++
++    /**
++     * @brief Gets the highest priority task assigned to the person.
++     *
++     * @return const Task& The highest priority task.
++     */
++    const Task& getHighestPriorityTask() const;
++
++    /**
++     * @brief Overloaded output stream operator for printing Person details.
++     *
++     * @param os The output stream.
++     * @param person The Person object to be printed.
++     * @return ostream& The output stream with the Person details.
++     */
++    friend ostream &operator<<(ostream &os, const Person &person);
++};
+diff --git a/README.md b/README.md
+index f53e20d..22bd23c 100644
+--- a/README.md
++++ b/README.md
+@@ -1,6 +1,7 @@
+-# HW3_2425A
+-This repository contains all supplied files for the first homework assignment in the course "Introduction to Systems Programming" (234124) at the Technion.
+-
+-You may find the full instructions for this assignment on the course's website.
+-
+-Good luck and have fun!
++# Matam Homework 3
++
++This repository contains all supplied files for the first homework assignment in the course "Introduction to Systems Programming" (234124) at the Technion.
++
++You may find the full instructions for this assignment on the [course's website](https://moodle2324.technion.ac.il/course/view.php?id=3205).
++
++Good luck and have fun!
+diff --git a/SortedList.h b/SortedList.h
+new file mode 100644
+index 0000000..ddb0d8e
+--- /dev/null
++++ b/SortedList.h
+@@ -0,0 +1,57 @@
++#pragma once
++
++#include <iostream>
++#include <stdexcept>
++
++namespace mtm {
++
++    template <typename T>
++    class SortedList {
++    public:
++        /**
++         *
++         * the class should support the following public interface:
++         * if needed, use =defualt / =delete
++         *
++         * constructors and destructor:
++         * 1. SortedList() - creates an empty list.
++         * 2. copy constructor
++         * 3. operator= - assignment operator
++         * 4. ~SortedList() - destructor
++         *
++         * iterator:
++         * 5. class ConstIterator;
++         * 6. begin method
++         * 7. end method
++         *
++         * functions:
++         * 8. insert - inserts a new element to the list
++         * 9. remove - removes an element from the list
++         * 10. length - returns the number of elements in the list
++         * 11. filter - returns a new list with elements that satisfy a given condition
++         * 12. apply - returns a new list with elements that were modified by an operation
++         */
++
++    };
++
++    template <class T>
++    class SortedList<T>::ConstIterator {
++    /**
++     * the class should support the following public interface:
++     * if needed, use =defualt / =delete
++     *
++     * constructors and destructor:
++     * 1. a ctor(or ctors) your implementation needs
++     * 2. copy constructor
++     * 3. operator= - assignment operator
++     * 4. ~ConstIterator() - destructor
++     *
++     * operators:
++     * 5. operator* - returns the element the iterator points to
++     * 6. operator++ - advances the iterator to the next element
++     * 7. operator!= - returns true if the iterator points to a different element
++     *
++     */
++    };
++}
++
+diff --git a/Task.cpp b/Task.cpp
+new file mode 100644
+index 0000000..176989a
+--- /dev/null
++++ b/Task.cpp
+@@ -0,0 +1,83 @@
++
++#include "Task.h"
++
++// Constructor
++Task::Task(int priority, TaskType type, const string &desc)
++    : m_description(desc), m_priority(priority), m_type(type)
++{
++    // enforce priority range of 0-100
++    // 0 is lowest priority, 100 is highest
++    if (m_priority < 0)
++    {
++        m_priority = 0;
++    }
++    else if (m_priority > 100)
++    {
++        m_priority = 100;
++    }
++}
++
++Task::Task(int priority, const string &desc)
++    : Task(priority, TaskType::General, desc) {}
++
++// Getters and setters
++int Task::getId() const {
++    return m_id;
++}
++
++void Task::setId(int newId) {
++    m_id = newId;
++}
++
++TaskType Task::getType() const {
++    return m_type;
++}
++
++string Task::getDescription() const {
++    return m_description;
++}
++
++int Task::getPriority() const {
++    return m_priority;
++}
++
++
++// Overloaded operators
++ostream &operator<<(ostream& os, const Task& task) {
++    os << "Task ID: " << task.m_id << ", Priority: " << task.m_priority;
++    os << ", Type: " << taskTypeToString(task.m_type) << ", Description: " << task.m_description;
++    return os;
++}
++
++bool operator>(const Task& lhs, const Task& rhs) {
++    return lhs.m_priority > rhs.m_priority;
++}
++
++
++// Convert TaskType to string
++std::string taskTypeToString(TaskType type) {
++    switch (type) {
++    case TaskType::Meeting:
++        return "Meeting";
++    case TaskType::Presentation:
++        return "Presentation";
++    case TaskType::Documentation:
++        return "Documentation";
++    case TaskType::Development:
++        return "Development";
++    case TaskType::Testing:
++        return "Testing";
++    case TaskType::Research:
++        return "Research";
++    case TaskType::Training:
++        return "Training";
++    case TaskType::Maintenance:
++        return "Maintenance";
++    case TaskType::CustomerSupport:
++        return "Customer Support";
++    case TaskType::General:
++        return "General";
++    default:
++        return "Unknown Task";
++    }
++}
+diff --git a/Task.h b/Task.h
+new file mode 100644
+index 0000000..87ed435
+--- /dev/null
++++ b/Task.h
+@@ -0,0 +1,115 @@
++
++#pragma once
++
++#include <iostream>
++#include <string>
++
++using std::ostream;
++using std::string;
++
++/**
++ * @brief Enum class representing different types of tasks.
++ */
++enum class TaskType {
++    Meeting,
++    Presentation,
++    Documentation,
++    Development,
++    Testing,
++    Research,
++    Training,
++    Maintenance,
++    CustomerSupport,
++    General
++};
++
++/**
++ * @brief Converts a TaskType enum to its corresponding string representation.
++ *
++ * @param type The TaskType enum to be converted.
++ * @return std::string The string representation of the TaskType.
++ */
++string taskTypeToString(TaskType type);
++
++/**
++ * @brief Class representing a task.
++ */
++class Task {
++private:
++    int m_id;
++    string m_description;
++    int m_priority;
++    TaskType m_type;
++
++public:
++    /**
++     * @brief Constructor to create a Task object.
++     *
++     * @param priority The priority of the task, enforced to be in range [0, 100].
++     * @param type The type of the task (default is TaskType::General).
++     * @param desc The description of the task (default is an empty string).
++     */
++    Task(int priority, TaskType type = TaskType::General, const string& desc = "");
++
++    /**
++     * @brief Constructor to create a Task object with a default type.
++     *
++     * @param priority The priority of the task, enforced to be in range [0, 100].
++     * @param desc The description of the task.
++     */
++    Task(int priority, const string& desc = "");
++
++    /**
++     * @brief Gets the ID of the task.
++     *
++     * @return int The ID of the task.
++     */
++    int getId() const;
++
++    /**
++     * @brief Sets the ID of the task.
++     *
++     * @param newId The new ID to be set for the task.
++     */
++    void setId(int newId);
++
++    /**
++     * @brief Gets the description of the task.
++     *
++     * @return string The description of the task.
++     */
++    string getDescription() const;
++
++    /**
++     * @brief Gets the priority of the task.
++     *
++     * @return int The priority of the task.
++     */
++    int getPriority() const;
++
++    /**
++     * @brief Gets the type of the task.
++     *
++     * @return TaskType The type of the task.
++     */
++    TaskType getType() const;
++
++    /**
++     * @brief Overloaded output stream operator for printing Task details.
++     *
++     * @param os The output stream.
++     * @param task The Task object to be printed.
++     * @return ostream& The output stream with the Task details.
++     */
++    friend ostream &operator<<(ostream& os, const Task& task);
++
++    /**
++     * @brief Overloaded greater-than operator to compare two Task objects based on priority.
++     *
++     * @param lhs The left-hand side Task object.
++     * @param rhs The right-hand side Task object.
++     * @return true If the priority of lhs is greater than that of rhs.
++     * @return false If the priority of lhs is not greater than that of rhs.
++     */
++    friend bool operator>(const Task& lhs, const Task& rhs);
++};
+diff --git a/TaskManager.h b/TaskManager.h
+new file mode 100644
+index 0000000..f1acc89
+--- /dev/null
++++ b/TaskManager.h
+@@ -0,0 +1,75 @@
++
++#pragma once
++
++#include "Task.h"
++
++/**
++ * @brief Class managing tasks assigned to multiple persons.
++ */
++class TaskManager {
++private:
++    /**
++     * @brief Maximum number of persons the TaskManager can handle.
++     */
++    static const int MAX_PERSONS = 10;
++
++    // Note - Additional private fields and methods can be added if needed.
++
++public:
++    /**
++     * @brief Default constructor to create a TaskManager object.
++     *
++     * Note - you may add =default if needed.
++     */
++    TaskManager();
++
++    /**
++     * @brief Deleted copy constructor to prevent copying of TaskManager objects.
++     */
++    TaskManager(const TaskManager &other) = delete;
++
++    /**
++     * @brief Deleted copy assignment operator to prevent assignment of TaskManager objects.
++     */
++    TaskManager &operator=(const TaskManager &other) = delete;
++
++    /**
++     * @brief Assigns a task to a person.
++     *
++     * @param personName The name of the person to whom the task will be assigned.
++     * @param task The task to be assigned.
++     */
++    void assignTask(const string &personName, const Task &task);
++
++    /**
++     * @brief Completes the highest priority task assigned to a person.
++     *
++     * @param personName The name of the person who will complete the task.
++     */
++    void completeTask(const string &personName);
++
++    /**
++     * @brief Bumps the priority of all tasks of a specific type.
++     *
++     * @param type The type of tasks whose priority will be bumped.
++     * @param priority The amount by which the priority will be increased.
++     */
++    void bumpPriorityByType(TaskType type, int priority);
++
++    /**
++     * @brief Prints all employees and their tasks.
++     */
++    void printAllEmployees() const;
++
++    /**
++     * @brief Prints all tasks of a specific type.
++     *
++     * @param type The type of tasks to be printed.
++     */
++    void printTasksByType(TaskType type) const;
++
++    /**
++     * @brief Prints all tasks assigned to all employees.
++     */
++    void printAllTasks() const;
++};
+diff --git a/main.cpp b/main.cpp
+new file mode 100644
+index 0000000..8fd68ab
+--- /dev/null
++++ b/main.cpp
+@@ -0,0 +1,531 @@
++
++#include <iostream>
++#include "TaskManager.h"
++#include "Task.h"
++
++using std::cout;
++using std::endl;
++
++using mtm::SortedList;
++
++typedef bool (*testFunc)(void);
++
++//defines
++
++#define RUN_TEST(test, name)                        \
++    do                                              \
++    {                                               \
++        std::cout << "Running " << name << " ... " << std::endl ; \
++        if (test())                                 \
++        {                                           \
++            std::cout << "[OK]\n";                  \
++        }                                           \
++        else                                        \
++        {                                           \
++            std::cout << "[Failed]\n";              \
++        }                                           \
++    } while (0)
++
++#define ASSERT_TEST(expr)                                                                               \
++    do                                                                                                  \
++    {                                                                                                   \
++        if (!(expr))                                                                                    \
++        {                                                                                               \
++            std::cout << "\nAssertion failed at " << __FILE__ << ":" << __LINE__ << #expr << std::endl; \
++            return false;                                                                               \
++        }                                                                                               \
++    } while (0)
++
++
++
++
++
++// tests
++
++class ExceptionThrowingType
++{
++public:
++    static int copy_count;
++    static const int max_copies = 3; // Exception will be thrown on the third copy
++    static bool throw_state;
++
++    ExceptionThrowingType(int value = 0) : value(value) {}
++
++    // Copy constructor
++    ExceptionThrowingType(const ExceptionThrowingType &other) : value(other.value)
++    {
++        if ((++copy_count >= max_copies) && (throw_state))
++        {
++            throw std::bad_alloc();
++        }
++    }
++
++    // Assignment operator
++    ExceptionThrowingType &operator=(const ExceptionThrowingType &other)
++    {
++        if (this != &other)
++        {
++            value = other.value;
++            if (++copy_count >= max_copies)
++            {
++                throw std::bad_alloc();
++            }
++        }
++        return *this;
++    }
++
++    // Comparison operator
++    bool operator>(const ExceptionThrowingType &other) const
++    {
++        return value > other.value;
++    }
++
++    int getValue() const
++    {
++        return value;
++    }
++
++    void zeroCounter()
++    {
++        this->copy_count = 0;
++    }
++    void changeState(bool state)
++    {
++        this->throw_state=state;
++    }
++
++private:
++    int value;
++};
++
++int ExceptionThrowingType::copy_count = 0;
++bool ExceptionThrowingType::throw_state = false;
++
++
++bool testTaskManagerPrintTasksByType()
++{
++    TaskManager manager;
++    Task task1(1, TaskType::Documentation, "Document API methods");
++    Task task2(5, TaskType::Development, "Refactor core module");
++    Task task3(8, TaskType::Testing, "Integration testing");
++    Task task4(5, TaskType::General, "Weekly team meeting");
++    Task task5(7, TaskType::Development, "Implement new feature");
++    Task task6(3, TaskType::Documentation, "Update user guide");
++    Task task7(-1, TaskType::Testing, "Write unit tests");
++    Task task8(2000, TaskType::Testing, "stream");
++    Task task9(6, TaskType::Development, "Fix bug in UI");
++    Task task10(4, TaskType::General, "Clean up code");
++    Task task11(2, TaskType::Documentation, "Write README");
++    Task task12(1, TaskType::Testing, "Run system tests");
++    Task task13(2, TaskType::Testing, "Run system tests");
++    Task task14(1, TaskType::Testing, "Run system tests");
++    Task task15(1, TaskType::Testing, "Run system tests");
++    Task task16(4, TaskType::General, "Clean up code");
++    Task task17(4, TaskType::General, "Clean up code");
++
++    manager.assignTask("Alice", task1);
++    manager.assignTask("Bob", task2);
++    manager.assignTask("Bob", Task(5, TaskType::General, "Run system tests"));
++    manager.assignTask("Bob", Task(7, TaskType::General, "Run system tests"));
++    manager.assignTask("Bob", Task(-1, TaskType::General, "Run system tests"));
++    manager.assignTask("Bob", Task(200, TaskType::General, "200"));
++    manager.assignTask("Charlixcx", task3);
++    manager.assignTask("Dana", task4);
++    manager.assignTask("Eve", task5);
++    manager.assignTask("Frank", task6);
++    manager.assignTask("Grace", task7);
++    manager.assignTask("SOPHIE", task8);
++    manager.assignTask("Hank", task9);
++    manager.assignTask("Bonie", task10);
++
++    manager.assignTask("Alice", task1);
++    manager.assignTask("Bob", task1);
++
++    manager.completeTask("Dana");
++
++    manager.printTasksByType(TaskType::Development);
++    cout << endl;
++    manager.bumpPriorityByType(TaskType::Development, 50);
++    manager.printTasksByType(TaskType::Development);
++    cout << endl;
++    manager.printTasksByType(TaskType::Testing);
++    cout << endl;
++
++    return true;
++}
++
++bool testListBasic()
++{
++    // Test default constructor
++    SortedList<int> list;
++    if (list.length() != 0)
++        return false;
++
++    // Test insert and length
++    list.insert(5);
++    list.insert(3);
++    list.insert(8);
++    if (list.length() != 3)
++        return false;
++
++    // Test copy constructor
++    SortedList<int> copy(list);
++    if (copy.length() != 3)
++        return false;
++
++    // Check copied elements
++    auto it_copy = copy.begin();
++    auto it_list = list.begin();
++    for (int i = 0; i < list.length(); ++i)
++    {
++        if ((*it_copy != *it_list) || (&(*it_copy) == &(*it_list)))
++            return false;
++        ++it_copy;
++        ++it_list;
++    }
++
++    // Test assignment operator
++    SortedList<int> another_list;
++    another_list = list;
++    if (another_list.length() != 3)
++        return false;
++
++    // Check assigned elements
++    it_list = list.begin();
++    auto it_another_list = another_list.begin();
++    for (int i = 0; i < list.length(); ++i)
++    {
++        if ((*it_another_list != *it_list) || (&(*it_another_list) == &(*it_list)))
++            return false;
++        ++it_another_list;
++        ++it_list;
++    }
++
++    // Ensure deep copy
++    list.insert(10);
++    if (another_list.length() != 3)
++        return false;
++
++    return true;
++}
++
++
++
++bool testListExceptions()
++{
++    using mtm::SortedList;
++
++    SortedList<int> list;
++
++    // Attempt to increment an iterator past the end of the list
++    try
++    {
++        auto it = list.end();
++        ++it;         // This should throw an exception
++        return false; // If no exception is thrown, the test should fail
++    }
++    catch (const std::out_of_range &e)
++    {
++        // Exception is expected, so the test should pass
++    }
++
++    // Insert some elements
++    list.insert(5);
++    list.insert(3);
++    list.insert(8);
++    list.insert(1);
++
++    // Attempt to increment an iterator past the end of the list after insertion
++    try
++    {
++        auto it = list.begin();
++        ++it;
++        ++it;
++        ++it;
++        ++it;
++        ++it;         // This should throw an exception
++        return false; // If no exception is thrown, the test should fail
++    }
++    catch (const std::out_of_range &e)
++    {
++        // Exception is expected, so the test should pass
++    }
++
++    // Attempt to remove using an end iterator (which should be invalid)
++    try
++    {
++        auto endIt = list.end();
++        list.remove(endIt); // This should not throw an exception but should handle gracefully
++        // No exception expected, so no assert here
++    }
++    catch (...)
++    {
++        return false; // If any exception is thrown, the test should fail
++    }
++
++    // Create an iterator and make it invalid by incrementing past the end
++    auto it = list.begin();
++    ++it;
++    ++it;
++    ++it;
++    ++it; // Now it should be invalid (past end)
++
++    try
++    {
++        ++it;         // Incrementing further should throw an exception
++        return false; // If no exception is thrown, the test should fail
++    }
++    catch (const std::out_of_range &e)
++    {
++        // Exception is expected, so the test should pass
++    }
++
++    ////
++
++    // Test exception safety in copy constructor
++    try
++    {
++        SortedList<int> list;
++        list.insert(1);
++        list.insert(2);
++        SortedList<int> copy(list); // This should not throw
++    }
++    catch (...)
++    {
++        return false;
++    }
++
++    // Test exception safety in assignment operator
++    try
++    {
++        SortedList<int> list;
++        list.insert(1);
++        list.insert(2);
++        SortedList<int> another_list;
++        another_list = list; // This should not throw
++    }
++    catch (...)
++    {
++        return false;
++    }
++
++    // Ensure proper memory management in case of exceptions (Mock the exception)
++    try
++    {
++        SortedList<int> list;
++        list.insert(1);
++        list.insert(2);
++        // Simulate exception during copy constructor
++
++        struct MockException : public std::exception
++        {
++        };
++        throw MockException();
++        SortedList<int> copy(list);
++        return false; // Should not reach here
++    }
++    catch (const std::exception &)
++    {
++        // Expected behavior
++    }
++
++    return true;
++}
++
++bool testCopyConstructorExceptionSafety()
++{
++    try
++    {
++        ExceptionThrowingType x(1);
++        x.zeroCounter();
++        x.changeState(false);
++        SortedList<ExceptionThrowingType> list;
++        list.insert(ExceptionThrowingType(1));
++        list.insert(ExceptionThrowingType(2));
++
++        // Force an exception during the copy constructor
++        // add flag
++        x.changeState(true);
++        SortedList<ExceptionThrowingType> copy(list); // Should throw std::bad_alloc
++        return false;                                 // If no exception is thrown, the test fails
++    }
++    catch (const std::bad_alloc &)
++    {
++        // Expected exception was thrown
++    }
++    catch (...)
++    {
++        return false; // Unexpected exception
++    }
++
++    return true;
++}
++
++
++
++bool testTaskManager()
++{
++    TaskManager tm;
++
++    // Create some tasks
++    Task task1(1, TaskType::Meeting, "Discuss project goals");
++    Task task2(2, TaskType::Development, "Implement feature X");
++    Task task3(3, TaskType::Testing, "Test feature X");
++    Task task4(4, TaskType::Documentation, "Write docs for feature X");
++    Task task5(5, TaskType::Research, "Explore new tech");
++
++    // Assign tasks to employees
++    tm.assignTask("Alice", task1);
++    tm.assignTask("Bob", task2);
++    tm.assignTask("Alice", task3);
++    tm.assignTask("Charlie", task4);
++    tm.assignTask("Bob", task5);
++
++    tm.printAllEmployees();
++    cout << endl;
++
++    tm.printAllTasks();
++    cout << endl;
++
++    // Complete a task and verify it no longer appears
++    tm.completeTask("Alice");
++
++    tm.printAllTasks();
++    cout << endl;
++
++    tm.bumpPriorityByType(TaskType::Documentation, 2);
++
++    tm.printTasksByType(TaskType::Documentation);
++    cout << endl;
++
++    tm.printTasksByType(TaskType::Research);
++    cout << endl;
++
++    return true;
++}
++
++bool testTaskManagerAssignTask()
++{
++    TaskManager manager;
++    Task task1(1, TaskType::Documentation, "Document API methods");
++    Task task2(5, TaskType::Development, "Refactor core module");
++    Task task3(8, TaskType::Testing, "Integration testing");
++    Task task4(5, TaskType::General, "Weekly team meeting");
++    Task task5(7, TaskType::Development, "Implement new feature");
++    Task task6(3, TaskType::Documentation, "Update user guide");
++    Task task7(-1, TaskType::Testing, "Write unit tests");
++    Task task8(2000, TaskType::Testing, "stream");
++    Task task9(6, TaskType::Development, "Fix bug in UI");
++    Task task10(4, TaskType::General, "Clean up code");
++    Task task11(2, TaskType::Documentation, "Write README");
++    Task task12(1, TaskType::Testing, "Run system tests");
++    Task task13(1, TaskType::Testing, "Run system tests");
++    Task task14(1, TaskType::Testing, "Run system tests");
++    Task task15(1, TaskType::Testing, "Run system tests");
++    Task task16(4, TaskType::General, "Clean up code");
++    Task task17(4, TaskType::General, "Clean up code");
++
++    manager.assignTask("Alice", task1);
++    manager.assignTask("Bob", task2);
++    manager.assignTask("Charlixcx", task3);
++    manager.assignTask("Dana", task4);
++    manager.assignTask("Eve", task5);
++    manager.assignTask("Frank", task6);
++    manager.assignTask("Grace", task7);
++    manager.assignTask("SOPHIE", task8);
++    manager.assignTask("Hank", task9);
++    manager.assignTask("Bonie", task10);
++
++    try
++    {
++        manager.assignTask("boom", task11);
++        return false; // should have thrown exception
++    }
++    catch (std::exception &e)
++    {
++    }
++
++    manager.assignTask("Bob", task12);
++    manager.assignTask("Bob", task13);
++    manager.assignTask("Bob", task14);
++    manager.assignTask("Bob", task15);
++    manager.assignTask("Bob", task16);
++    manager.assignTask("Bob", task17);
++
++    // Assuming we have a way to verify task has been assigned, like a method that counts tasks
++    return true;
++}
++
++
++// end of tests
++
++
++
++
++
++
++
++
++#define TESTS_NAMES                          \
++    X(testListBasic)                         \
++    X(testListExceptions)                    \
++    X(testTaskManager)                       \
++    X(testCopyConstructorExceptionSafety)    \
++    X(testTaskManagerAssignTask)             \
++    X(testTaskManagerPrintTasksByType)
++
++
++testFunc tests[] = {
++#define X(name) name,
++    TESTS_NAMES
++#undef X
++};
++
++const char *tests_names[] = {
++#define X(name) #name,
++    TESTS_NAMES
++#undef X
++};
++using mtm::SortedList;
++
++template <typename T>
++void printList(const mtm::SortedList<T> &list, std::ostream &os=std::cout)
++{
++    for (auto it = list.begin(); it != list.end(); ++it)
++    {
++        os << *it << " ";
++    }
++    os << std::endl;
++}
++
++
++int main(int argc, char **argv)
++{
++    int number_of_tests = sizeof(tests) / sizeof(tests[0]);
++
++    if (argc == 1)
++    {
++        for (int test_idx = 0; test_idx < number_of_tests; test_idx++)
++        {
++            std::cout << "Running test " << test_idx + 1 << std::endl;
++            RUN_TEST(tests[test_idx], tests_names[test_idx]);
++            cout << endl;
++        }
++        return 0;
++    }
++    if (argc != 2)
++    {
++        std::cout << "Usage: tests <test index>" << std::endl;
++        return 0;
++    }
++
++    int test_idx = strtol(argv[1], NULL, 10);
++    if (test_idx < 1 || test_idx > number_of_tests)
++    {
++        std::cerr << "Invalid test index " << test_idx << std::endl;
++        return 0;
++    }
++
++    RUN_TEST(tests[test_idx - 1], tests_names[test_idx - 1]);
++    return 0;
++}
+diff --git a/tests/test1.expected b/tests/test1.expected
+new file mode 100644
+index 0000000..9da604f
+--- /dev/null
++++ b/tests/test1.expected
+@@ -0,0 +1,3 @@
++Running testListBasic ... 
++[OK]
++
+diff --git a/tests/test2.expected b/tests/test2.expected
+new file mode 100644
+index 0000000..a1fb014
+--- /dev/null
++++ b/tests/test2.expected
+@@ -0,0 +1,3 @@
++Running testListExceptions ... 
++[OK]
++
+diff --git a/tests/test3.expected b/tests/test3.expected
+new file mode 100644
+index 0000000..c6d84ca
+--- /dev/null
++++ b/tests/test3.expected
+@@ -0,0 +1,30 @@
++Running testTaskManager ... 
++Person: Alice
++Task ID: 2, Priority: 3, Type: Testing, Description: Test feature X
++Task ID: 0, Priority: 1, Type: Meeting, Description: Discuss project goals
++
++Person: Bob
++Task ID: 4, Priority: 5, Type: Research, Description: Explore new tech
++Task ID: 1, Priority: 2, Type: Development, Description: Implement feature X
++
++Person: Charlie
++Task ID: 3, Priority: 4, Type: Documentation, Description: Write docs for feature X
++
++
++Task ID: 4, Priority: 5, Type: Research, Description: Explore new tech
++Task ID: 3, Priority: 4, Type: Documentation, Description: Write docs for feature X
++Task ID: 2, Priority: 3, Type: Testing, Description: Test feature X
++Task ID: 1, Priority: 2, Type: Development, Description: Implement feature X
++Task ID: 0, Priority: 1, Type: Meeting, Description: Discuss project goals
++
++Task ID: 4, Priority: 5, Type: Research, Description: Explore new tech
++Task ID: 3, Priority: 4, Type: Documentation, Description: Write docs for feature X
++Task ID: 1, Priority: 2, Type: Development, Description: Implement feature X
++Task ID: 0, Priority: 1, Type: Meeting, Description: Discuss project goals
++
++Task ID: 3, Priority: 6, Type: Documentation, Description: Write docs for feature X
++
++Task ID: 4, Priority: 5, Type: Research, Description: Explore new tech
++
++[OK]
++
+diff --git a/tests/test4.expected b/tests/test4.expected
+new file mode 100644
+index 0000000..a46c1c9
+--- /dev/null
++++ b/tests/test4.expected
+@@ -0,0 +1,3 @@
++Running testCopyConstructorExceptionSafety ... 
++[OK]
++
+diff --git a/tests/test5.expected b/tests/test5.expected
+new file mode 100644
+index 0000000..e7db415
+--- /dev/null
++++ b/tests/test5.expected
+@@ -0,0 +1,3 @@
++Running testTaskManagerAssignTask ... 
++[OK]
++
+diff --git a/tests/test6.expected b/tests/test6.expected
+new file mode 100644
+index 0000000..07fd396
+--- /dev/null
++++ b/tests/test6.expected
+@@ -0,0 +1,15 @@
++Running testTaskManagerPrintTasksByType ... 
++Task ID: 8, Priority: 7, Type: Development, Description: Implement new feature
++Task ID: 12, Priority: 6, Type: Development, Description: Fix bug in UI
++Task ID: 1, Priority: 5, Type: Development, Description: Refactor core module
++
++Task ID: 8, Priority: 57, Type: Development, Description: Implement new feature
++Task ID: 12, Priority: 56, Type: Development, Description: Fix bug in UI
++Task ID: 1, Priority: 55, Type: Development, Description: Refactor core module
++
++Task ID: 11, Priority: 100, Type: Testing, Description: stream
++Task ID: 6, Priority: 8, Type: Testing, Description: Integration testing
++Task ID: 10, Priority: 0, Type: Testing, Description: Write unit tests
++
++[OK]
++
+
+commit 5bdbf99b46b6f1558a47c5533aefc209c37e23d4
+Author: Ron Raphaeli <102682845+ronraphaeli@users.noreply.github.com>
+Date:   Fri Dec 20 16:57:29 2024 +0200
+
+    Update README.md
+
+diff --git a/README.md b/README.md
+index c36b592..f53e20d 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1,6 @@
+-# HW3_2425A
+\ No newline at end of file
++# HW3_2425A
++This repository contains all supplied files for the first homework assignment in the course "Introduction to Systems Programming" (234124) at the Technion.
++
++You may find the full instructions for this assignment on the course's website.
++
++Good luck and have fun!
+
+commit 6c999dc9a584fbf8c3a296c357c16141db7b5abe
+Author: Ron Raphaeli <102682845+ronraphaeli@users.noreply.github.com>
+Date:   Fri Dec 20 16:57:09 2024 +0200
+
+    Initial commit
+
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..c36b592
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1 @@
++# HW3_2425A
+\ No newline at end of file
